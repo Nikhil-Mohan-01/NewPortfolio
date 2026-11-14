@@ -1,36 +1,43 @@
-# Tokyo street preview
+# R34 cockpit preview
 
-From this directory, install the locked dependencies and run the development preview.
+From this directory, install the locked dependencies and start the preview.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open the URL printed by Vite. The preview starts at 6 m/s and uses a fixed camera at 1.15 m. A system reduced-motion preference starts the street stationary.
+Open the URL printed by Vite. The street renders as the local R34 model loads, then the camera switches to the right-hand driver's seat. The street travels at 6 m/s by default. The driver's eye and the car stay fixed. A system reduced-motion preference starts the street stationary.
 
 ## Development preview
 
-Use query parameters to inspect the scene. These settings and the browser console API are development-only.
+These query parameters and the browser console API are available in development.
 
 | Parameter | Example | Purpose |
 | --- | --- | --- |
+| `view` | `?view=street` | Inspect the original street without loading the car. |
 | `speed` | `?speed=8` | Speed in metres per second. Use 3–10 for normal travel, 0 to freeze, or up to 64 to stress the loop. |
 | `paused` | `?paused=1` | Hold the starting view. |
-| `yaw` | `?paused=1&yaw=-60` | Inspect an oblique view, up to 70° to either side. |
-| `x`, `eye` | `?x=0.36&eye=1.08` | Preview lateral and vertical camera offsets in metres. |
-| `quality` | `?quality=low` | Reduce decorative geometry, point lights, and pixel ratio, and disable bloom. |
-| `seed` | `?seed=7128` | Reproduce a particular set of frontages and pavement variations. |
+| `yaw`, `pitch`, `fov` | `?paused=1&yaw=15&pitch=-4&fov=57` | Set the camera angles and vertical field of view in degrees. |
+| `x`, `eye`, `z` | `?x=0.35&eye=1.06&z=0.39` | Set the camera position in metres. |
+| `quality` | `?quality=low` | Reduce street geometry, street lights, and pixel ratio, and disable bloom. |
+| `seed` | `?seed=7128` | Reproduce a particular street layout. |
 
-Use `window.streetPreview.street.paused` and `window.streetPreview.street.speed` to pause, resume, or change speed live. `window.streetPreview.stats` shows scene draw calls, triangles, and renderer resource counts.
+Use `window.streetPreview.street.paused` and `window.streetPreview.street.speed` to pause, resume, or change speed live. `window.streetPreview.camera` supports live inspection. Call `camera.updateProjectionMatrix()` after changing its FOV or clip planes. `window.streetPreview.stats` shows scene draw calls, triangles, and renderer resource counts.
 
-## Host integration
+## Model and camera
 
-Import `createTokyoStreet` from `src/environment` and add `street.root` to the host scene. Call `street.update(deltaSeconds)` once per host frame. Start with the camera aimed along −Z near `(0, 1.15, 0)`, with 60° vertical FOV and clip planes at 0.045 and 160 m. The road and both building rows travel along +Z. The recycling envelope supports side glances up to ±70° with the preview’s bounded offsets.
+The unchanged source file lives in [`public/models/r34/r34.glb`](public/models/r34/r34.glb) with [attribution and license](public/models/r34/ATTRIBUTION.md). The loader resolves `models/r34/r34.glb` beneath Vite's configured base URL. The street stays available while the file loads and if the load fails. The browser console reports the URL path and error on failure.
 
-The host owns the scene background, fog, animation loop, visibility handling, camera, and renderer. Use the color and planes in `street.fog` for the scene fog, and match the background to its color. The default fog fades from 25 m to 138 m. Keep custom far fog distances at or below 160 m to conceal recycled sections. To reproduce the preview’s glow, render through one `RenderPass → UnrealBloomPass → OutputPass` chain with ACES tone mapping. The default preview caps device pixel ratio at 1.5, and low quality caps it at 1.
+Tune the normalization and driver's eye in [`src/cockpit/config.ts`](src/cockpit/config.ts). The normalization gives the model a 4.60 m length, places it on the source tire contact plane, and turns the bonnet toward −Z. The seated view starts at `(0.35, 1.06, 0.39)` m with 56° vertical FOV and 0.025–160 m clipping. Resizing updates camera aspect while preserving the eye position.
 
-Pass seed, quality, fog, palette, and lighting intensity in `StreetOptions`. Recreate the module to change seed, quality, or palette. Change speed and pause directly on the returned instance. Change `lightingIntensity` to scale the scene lights while preserving sign and window emission. Call `street.dispose()` when removing it to release its owned resources.
+The original glass geometry uses lightweight transparent materials in the running scene. The wheel meshes are batched per wheel and material, and the engine is hidden beneath the closed bonnet. Mirrors retain their static asset appearance.
+
+## Street integration
+
+Import `createTokyoStreet` from `src/environment` and add `street.root` to the host scene. Call `street.update(deltaSeconds)` once per host frame. The road and building rows travel along +Z. The host owns scene fog, camera, renderer, visibility handling and the animation loop. Keep custom far fog distances at or below 160 m to conceal recycled sections. Use the same matched background and fog color and a single `RenderPass → UnrealBloomPass → OutputPass` chain to reproduce the preview's lighting.
+
+Pass seed, quality, fog, palette and lighting intensity through `StreetOptions`. Recreate the module to change seed, quality or palette. Speed, pause and lighting intensity can be changed on the returned instance. Call `street.dispose()` when removing it to release its owned resources.
 
 ## Checks
 
@@ -40,4 +47,4 @@ npm run lint
 npm run build
 ```
 
-The [execution plan](.agent/plans/01-tokyo-street-environment.md) records browser verification and measurements.
+The [cockpit execution plan](.agent/plans/02-r34-cockpit.md) records browser verification and measurements.
