@@ -45,16 +45,17 @@ export function createRoadKit(seed: number, asphalt = "#11151d") {
   road.translate(0, 0, -chunkLength / 2);
   const kerb = new THREE.BoxGeometry(0.115, curbHeight, chunkLength);
   const pavement = new THREE.BoxGeometry(
-    pavementWidth - 0.115,
+    pavementWidth + 0.22,
     curbHeight - 0.018,
     chunkLength,
   );
   const paint = new THREE.PlaneGeometry(0.038, chunkLength);
   paint.rotateX(-Math.PI / 2);
   const roadMaterial = new THREE.MeshStandardMaterial({
-    color: asphalt,
+    color: new THREE.Color(asphalt).multiplyScalar(2.25),
     map: texture,
-    roughness: 0.82,
+    roughnessMap: texture,
+    roughness: 0.89,
   });
   const kerbMaterial = new THREE.MeshStandardMaterial({
     color: "#4b4b52",
@@ -83,7 +84,7 @@ export function createRoadKit(seed: number, asphalt = "#11151d") {
         );
         const pavementMesh = new THREE.Mesh(pavement, pavementMaterial);
         pavementMesh.position.set(
-          side * (laneWidth / 2 + 0.115 + (pavementWidth - 0.115) / 2),
+          side * (laneWidth / 2 + 0.115 + (pavementWidth + 0.22) / 2),
           (curbHeight - 0.018) / 2,
           -chunkLength / 2,
         );

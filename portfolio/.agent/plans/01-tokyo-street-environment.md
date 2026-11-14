@@ -22,7 +22,7 @@ The project has a spec and workspace instructions. There is no application, pack
 ## Milestones
 
 - [x] Scaffold the preview and a continuous lane with street edges. Verify lint, typecheck, and build.
-- [ ] Implement the five facade archetypes, signs, atmospheric lighting, and corresponding asphalt spill. Inspect forward and oblique views.
+- [x] Implement the five facade archetypes, signs, atmospheric lighting, and corresponding asphalt spill. Inspect forward and oblique views.
 - [ ] Finish recycling and host integration. Verify motion, lifecycle, viewport changes, and frame/resource budgets with the running preview.
 
 ## Risks
@@ -33,6 +33,7 @@ Check batch and texture disposal when quality changes. Sample the road joins and
 
 - 2026-11-13. Read the spec and workspace instructions. Created the feature branch.
 - 2026-11-13. Added the Vite preview, road, curb and pavement geometry. Typecheck, lint and production build passed.
+- 2026-11-13. Added all five facade types, an atlas for fictional shop signs, bloom, fog, and matching wall and road spill. Captured and inspected the fixed preview in Chrome at straight and ±60° views.
 
 ## Verification
 

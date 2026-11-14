@@ -17,3 +17,19 @@ export const CAMERA = {
 } as const;
 
 export const DEFAULT_FOG = { color: "#111426", near: 25, far: 138 };
+
+export type StreetQuality = "standard" | "low";
+
+export const DEFAULT_PALETTE = {
+  asphalt: "#11151d",
+  concrete: "#333641",
+  plaster: "#3c4353",
+  tile: "#59504e",
+  pink: "#ff4fa0",
+  violet: "#9868ff",
+  blue: "#4d8eff",
+  cyan: "#69dceb",
+  warm: "#ffd39a",
+};
+
+export type StreetPalette = typeof DEFAULT_PALETTE;
