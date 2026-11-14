@@ -4,7 +4,6 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { R34 } from "../cockpit/config";
-import { loadR34 } from "../cockpit/model";
 import { CAMERA, createTokyoStreet, type StreetOptions } from "../environment";
 import "./style.css";
 
@@ -97,10 +96,12 @@ resize();
 visibilityChanged();
 
 const cockpitLoad = new AbortController();
-let cockpit: Awaited<ReturnType<typeof loadR34>> | undefined;
+let cockpit:
+  Awaited<ReturnType<typeof import("../cockpit/model").loadR34>> | undefined;
 
 if (cockpitRequested) {
-  void loadR34(cockpitLoad.signal)
+  void import("../cockpit/model")
+    .then(({ loadR34 }) => loadR34(cockpitLoad.signal))
     .then((model) => {
       if (cockpitLoad.signal.aborted) {
         model.dispose();

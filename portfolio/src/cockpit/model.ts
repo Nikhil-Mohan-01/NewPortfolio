@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { R34 } from "./config";
+import { batchWheelMeshes } from "./wheels";
 
 function modelResources(root: THREE.Object3D) {
   const geometries = new Set<THREE.BufferGeometry>();
@@ -61,15 +62,28 @@ export async function loadR34(signal: AbortSignal) {
     data,
     new URL(".", url).href,
   );
-  const resources = modelResources(model);
   if (signal.aborted) {
-    resources.dispose();
+    modelResources(model).dispose();
     signal.throwIfAborted();
   }
+  batchWheelMeshes(model);
+  const resources = modelResources(model);
 
   // This loader owns an independent model instance. Each of these source materials is
   // shared only by geometry that should receive the same adjustment.
   for (const material of resources.materials) {
+    if (
+      material instanceof THREE.MeshStandardMaterial &&
+      material.name.endsWith("InteriorA_Material1")
+    ) {
+      material.metalness = 0.19;
+      material.roughness = 0.78;
+      // Dim textured fill keeps the cabin legible between shops. Existing moving point
+      // lights supply the varying sign colors with the same timing as the street.
+      material.emissive.set("#a7b0c4");
+      material.emissiveMap = material.map;
+      material.emissiveIntensity = 0.12;
+    }
     if (
       !(material instanceof THREE.MeshPhysicalMaterial) ||
       material.transmission === 0
@@ -86,6 +100,13 @@ export async function loadR34(signal: AbortSignal) {
   model.traverse((node) => {
     if (node instanceof THREE.Light || node instanceof THREE.Camera)
       helpers.push(node);
+    // Verified under the closed bonnet in the supplied model.
+    if (
+      node.name.startsWith("r1Engine_Geo_lodA_") &&
+      !(node instanceof THREE.Mesh)
+    ) {
+      node.visible = false;
+    }
   });
   for (const helper of helpers) helper.removeFromParent();
 
