@@ -5,6 +5,7 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { R34 } from "../cockpit/config";
 import { CAMERA, createTokyoStreet, type StreetOptions } from "../environment";
+import { createRetroCamera } from "./retro";
 import "./style.css";
 
 const container = document.querySelector<HTMLElement>("#street")!;
@@ -54,12 +55,13 @@ const output = new OutputPass();
 composer.addPass(drawScene);
 composer.addPass(bloom);
 composer.addPass(output);
+const retro = createRetroCamera(composer, standard);
 
 let lastFrame: number | undefined;
 let disposePreview: (() => void) | undefined;
 if (import.meta.env.DEV) {
   const { installPreviewApi } = await import("./preview");
-  disposePreview = installPreviewApi(street, scene, camera, renderer);
+  disposePreview = installPreviewApi(street, scene, camera, renderer, retro);
 }
 
 function resize() {
@@ -69,14 +71,14 @@ function resize() {
   const ratio = Math.min(devicePixelRatio, standard ? 1.5 : 1);
   renderer.setPixelRatio(ratio);
   renderer.setSize(clientWidth, clientHeight, false);
-  composer.setPixelRatio(ratio);
-  composer.setSize(clientWidth, clientHeight);
+  retro.resize(clientWidth, clientHeight, ratio);
   if (!document.hidden) composer.render();
 }
 
 function frame(time: number) {
   street.update((time - (lastFrame ?? time)) / 1000);
   lastFrame = time;
+  retro.update();
   composer.render();
 }
 
@@ -140,6 +142,7 @@ if (import.meta.hot) {
     street.dispose();
     drawScene.dispose();
     bloom.dispose();
+    retro.dispose();
     output.dispose();
     composer.dispose();
     renderer.dispose();
