@@ -2,7 +2,7 @@
 
 Spec `specs/Retro_Filter_Codex_Instructions.md`
 Branch `feat/retro-camera-filter`
-Status in progress
+Status done
 
 ## Goal
 
@@ -22,7 +22,7 @@ The branch starts from the merged cockpit on GitHub main. Three.js 0.187 uses on
 
 - [x] Capture the unchanged cockpit at its paused start on desktop, high-DPI portrait and ultrawide.
 - [x] Integrate and tune render scale, softness and color. Verify Clean with exact image comparisons.
-- [ ] Tune grain, vignette and edge color separation, then verify live motion, responsive framing, isolation, lifecycle and performance.
+- [x] Tune grain, vignette and edge color separation, then verify live motion, responsive framing, isolation, lifecycle and performance.
 
 ## Risks
 
@@ -38,4 +38,16 @@ Check the Three.js pass order and make the final shader write display values dir
 
 ## Verification
 
-Pending.
+| Criterion | Evidence |
+| --- | --- |
+| Softness, readable silhouettes and preserved neon | Compared matched starting views at 1440 × 900, 390 × 844 at DPR 2 and 1728 × 648. Inspected the active drive and paused A/B after 4.5 m of travel. Softness and grading reduce sharp edges while retaining the direction of the road, window framing, interior gauges and colored sign cores. |
+| Grain, scanlines and framing | Inspected static and moving Retro frames in Chrome and confirmed static pauses and changing grain against a held scene. Default scanlines are off. Enabled the optional desktop pattern briefly and kept it off in the preset. Low-tier captures stayed pixel-identical when edge and scanline settings were enabled in development. |
+| True bypass and UI isolation | Clean, explicitly disabled, and strength zero match original captures byte for byte in all three layouts. A temporary opaque DOM button's text stayed pixel-identical when switching from Retro to Clean. The dev-only API and query settings were absent from a production browser run. |
+| Motion and resize | At 32 m/s, Chrome sampled over 260 m and each of the eight street sections wrapped. Spacing stayed at 32 m while the car and camera matrices remained fixed. Verified the same eye and correct aspect after resize. Pause, zero speed, reduced motion and simulated visibility changes froze the grain. First resume delta was zero. |
+| Resource lifecycle | Ten Clean/Retro cycles returned to the same 71 geometries and 53 textures at a fixed resized viewport. Two Vite reloads each returned to one canvas and one cockpit. Shader and app runs produced no browser runtime errors. |
+| Performance | Headed Chrome 157 on an Apple M4 Pro MacBook Pro, standard tier at 1440 × 900, DPR 1, 6 m/s and the same first 12 m of travel. Clean averaged 75.0 FPS with a 13.7 ms p95 frame interval at a 1440 × 900 scene target. Retro averaged 75.0 FPS with a 14.0 ms p95 at 1177 × 736. Retro forced to 1440 × 900 averaged 75.0 FPS with a 14.1 ms p95. Browser frame intervals measure presentation cadence rather than GPU pass duration. Both profiles submitted 146 scene draw calls and 229,305 scene triangles, excluding postprocessing. |
+| Build | Typecheck, lint and build passed. The production preview loaded the intended preset, remained still with reduced motion, resumed afterward, and presented one canvas. Vite retained its entry bundle size warning, now about 614 kB minified. Mobile and high-DPI checks used desktop emulation. |
+
+## Final report
+
+The pass, preset values and shader are in `src/app/retro`. The application owns frame timing, resize and teardown, with development controls exposed through the existing preview. See `README.md` for the exact settings and preview commands.

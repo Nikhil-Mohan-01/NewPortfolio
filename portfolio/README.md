@@ -15,6 +15,7 @@ These query parameters and the browser console API are available in development.
 
 | Parameter | Example | Purpose |
 | --- | --- | --- |
+| `filter`, `strength` | `?paused=1&filter=retro&strength=0.65` | Compare Clean, Subtle, and Retro or set a custom strength from 0 to 1. |
 | `view` | `?view=street` | Inspect the original street without loading the car. |
 | `speed` | `?speed=8` | Speed in metres per second. Use 3–10 for normal travel, 0 to freeze, or up to 64 to stress the loop. |
 | `paused` | `?paused=1` | Hold the starting view. |
@@ -24,6 +25,14 @@ These query parameters and the browser console API are available in development.
 | `seed` | `?seed=7128` | Reproduce a particular street layout. |
 
 Use `window.streetPreview.street.paused` and `window.streetPreview.street.speed` to pause, resume, or change speed live. `window.streetPreview.camera` supports live inspection. Call `camera.updateProjectionMatrix()` after changing its FOV or clip planes. `window.streetPreview.stats` shows scene draw calls, triangles, and renderer resource counts.
+
+## Retro camera treatment
+
+The default Retro preset renders the scene at 82% of its original internal dimensions on standard quality, then smoothly upscales to the full canvas. At the shipped 0.65 strength, the softness radius is 0.51 CSS px, saturation is about 92% of Clean, and midtone grain peaks at ±0.017 display luminance with a 22 Hz cadence. Corner darkening peaks at 13%, and red and blue can shift up to 0.44 CSS px in opposite directions at the edges. Scanlines ship off. Low quality retains its existing render scale, halves the softness radius, and disables edge color separation and scanlines.
+
+The single composer renders the HDR scene and bloom first, then applies ACES tone mapping and sRGB output through `OutputPass`. One final shader grades and composites the display-encoded picture to the canvas. HTML remains outside that pipeline.
+
+Set the defaults in [`src/app/retro/config.ts`](src/app/retro/config.ts). During development, load `?paused=1&filter=clean` or `?paused=1&filter=retro` for an identical-position comparison. To switch live, call `window.streetPreview.retro.setPreset("clean")` or `setPreset("retro")` on that object. The host can change `retro.settings.enabled` or `retro.settings.strength` at runtime. Disabling the treatment or setting strength to zero skips the final shader and restores native scene resolution. Pausing, zero street speed, reduced motion, and hiding the tab hold the grain phase.
 
 ## Model and camera
 
