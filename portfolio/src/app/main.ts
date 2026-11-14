@@ -76,9 +76,13 @@ function resize() {
 }
 
 function frame(time: number) {
-  street.update((time - (lastFrame ?? time)) / 1000);
+  const delta = (time - (lastFrame ?? time)) / 1000;
+  street.update(delta);
   lastFrame = time;
-  retro.update();
+  retro.update(
+    delta,
+    !street.paused && street.speed > 0 && !motionPreference.matches,
+  );
   composer.render();
 }
 

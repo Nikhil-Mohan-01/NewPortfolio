@@ -12,6 +12,12 @@ export function createRetroCamera(composer: EffectComposer, standard: boolean) {
     softness: { value: 0 },
     saturation: { value: 1 },
     contrast: { value: 0 },
+    grain: { value: 0 },
+    grainFrame: { value: 0 },
+    vignette: { value: 0 },
+    chromaticOffset: { value: 0 },
+    scanlines: { value: 0 },
+    aspect: { value: 1 },
   };
   const pass = new ShaderPass(
     new ShaderMaterial({
@@ -29,8 +35,9 @@ export function createRetroCamera(composer: EffectComposer, standard: boolean) {
   let width = 1;
   let height = 1;
   const target = new Vector2();
+  let grainTime = 0;
 
-  function update() {
+  function update(delta = 0, animate = false) {
     const strength = settings.enabled
       ? MathUtils.clamp(settings.strength, 0, 1)
       : 0;
@@ -51,6 +58,7 @@ export function createRetroCamera(composer: EffectComposer, standard: boolean) {
     const targetHeight = Math.max(1, Math.floor(height * ratio));
     if (target.x !== targetWidth || target.y !== targetHeight) {
       target.set(targetWidth, targetHeight);
+      // The composer keeps its initial 1× ratio and receives target pixel dimensions.
       composer.setSize(targetWidth, targetHeight);
     }
     uniforms.softness.value =
@@ -61,6 +69,23 @@ export function createRetroCamera(composer: EffectComposer, standard: boolean) {
       strength,
     );
     uniforms.contrast.value = strength * settings.contrast;
+    uniforms.grain.value = strength * MathUtils.clamp(settings.grain, 0, 0.05);
+    uniforms.vignette.value =
+      strength * MathUtils.clamp(settings.vignette, 0, 0.35);
+    uniforms.chromaticOffset.value = standard
+      ? strength * MathUtils.clamp(settings.chromaticOffset, 0, 1)
+      : 0;
+    uniforms.scanlines.value =
+      standard && width >= 720
+        ? strength * MathUtils.clamp(settings.scanlines, 0, 0.02)
+        : 0;
+    if (animate && pass.enabled && uniforms.grain.value > 0) {
+      // Advance the grain independently. Pausing preserves both the index and its phase.
+      grainTime +=
+        MathUtils.clamp(delta, 0, 0.05) *
+        MathUtils.clamp(settings.grainHz, 0, 30);
+      uniforms.grainFrame.value = Math.floor(grainTime) % 65536;
+    }
   }
 
   return {
@@ -75,6 +100,7 @@ export function createRetroCamera(composer: EffectComposer, standard: boolean) {
       height = Math.max(1, cssHeight);
       baselineRatio = ratio;
       uniforms.cssPixel.value.set(1 / width, 1 / height);
+      uniforms.aspect.value = width / height;
       update();
     },
     update,

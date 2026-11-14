@@ -34,6 +34,8 @@ Check the Three.js pass order and make the final shader write display values dir
 
 - 2026-11-14. Added the display composite, grade and scaled targets. Clean matched the original screenshots byte-for-byte in all three profiles. Strength zero and disabling the pass also matched Clean.
 
+- 2026-11-14. Tuned low-amplitude grain, vignette, and edge separation against the paused and moving cockpit. Kept scanlines off by default and checked the optional setting.
+
 ## Verification
 
 Pending.

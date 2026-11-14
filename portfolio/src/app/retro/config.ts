@@ -22,10 +22,10 @@ export const RETRO: Readonly<RetroSettings> = {
   softness: 0.78,
   saturation: 0.87,
   contrast: 0.2,
-  grain: 0,
+  grain: 0.026,
   grainHz: 22,
-  vignette: 0,
-  chromaticOffset: 0,
+  vignette: 0.2,
+  chromaticOffset: 0.68,
   scanlines: 0,
 };
 
