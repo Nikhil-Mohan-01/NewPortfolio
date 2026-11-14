@@ -1,0 +1,15 @@
+html,
+body,
+#street {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #070911;
+}
+
+#street canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
