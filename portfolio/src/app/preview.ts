@@ -1,19 +1,33 @@
 import * as THREE from "three";
 import type { StreetOptions, TokyoStreet } from "../environment";
 
-export function readPreviewOptions(
-  camera: THREE.PerspectiveCamera,
-): StreetOptions {
-  const params = new URLSearchParams(location.search);
-  const bounded = (key: string, fallback: number, min: number, max: number) => {
-    const value = Number(params.get(key) ?? fallback);
-    return Number.isFinite(value)
-      ? THREE.MathUtils.clamp(value, min, max)
-      : fallback;
-  };
-  camera.rotation.y = THREE.MathUtils.degToRad(bounded("yaw", 0, -70, 70));
+const params = new URLSearchParams(location.search);
+
+function bounded(key: string, fallback: number, min: number, max: number) {
+  const value = Number(params.get(key) ?? fallback);
+  return Number.isFinite(value)
+    ? THREE.MathUtils.clamp(value, min, max)
+    : fallback;
+}
+
+export function showStreetOnly() {
+  return params.get("view") === "street";
+}
+
+export function applyCameraOverrides(camera: THREE.PerspectiveCamera) {
+  camera.rotation.y = THREE.MathUtils.degToRad(
+    bounded("yaw", THREE.MathUtils.radToDeg(camera.rotation.y), -70, 70),
+  );
+  camera.rotation.x = THREE.MathUtils.degToRad(
+    bounded("pitch", THREE.MathUtils.radToDeg(camera.rotation.x), -30, 30),
+  );
   camera.position.x = bounded("x", camera.position.x, -0.7, 0.7);
   camera.position.y = bounded("eye", camera.position.y, 0.8, 2.1);
+  camera.position.z = bounded("z", camera.position.z, -0.15, 0.9);
+  camera.fov = bounded("fov", camera.fov, 45, 73);
+}
+
+export function readPreviewOptions(): StreetOptions {
   return {
     speed: bounded("speed", 6, 0, 64),
     quality: params.get("quality") === "low" ? "low" : "standard",
@@ -33,6 +47,7 @@ export function installPreviewApi(
   const preview = {
     street,
     camera,
+    scene,
     get stats() {
       return last;
     },

@@ -3,6 +3,8 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { R34 } from "../cockpit/config";
+import { loadR34 } from "../cockpit/model";
 import { CAMERA, createTokyoStreet, type StreetOptions } from "../environment";
 import "./style.css";
 
@@ -15,11 +17,17 @@ const camera = new THREE.PerspectiveCamera(
   CAMERA.far,
 );
 camera.position.set(CAMERA.x, CAMERA.eyeHeight, 0);
+let cockpitRequested = true;
+let tuneCockpit: (() => void) | undefined;
 const options: StreetOptions = { paused: motionPreference.matches };
 
 if (import.meta.env.DEV) {
-  const { readPreviewOptions } = await import("./preview");
-  Object.assign(options, readPreviewOptions(camera));
+  const { readPreviewOptions, applyCameraOverrides, showStreetOnly } =
+    await import("./preview");
+  cockpitRequested = !showStreetOnly();
+  Object.assign(options, readPreviewOptions());
+  if (!cockpitRequested) applyCameraOverrides(camera);
+  tuneCockpit = () => applyCameraOverrides(camera);
 }
 
 const street = createTokyoStreet(options);
@@ -88,12 +96,45 @@ motionPreference.addEventListener("change", motionChanged);
 resize();
 visibilityChanged();
 
+const cockpitLoad = new AbortController();
+let cockpit: Awaited<ReturnType<typeof loadR34>> | undefined;
+
+if (cockpitRequested) {
+  void loadR34(cockpitLoad.signal)
+    .then((model) => {
+      if (cockpitLoad.signal.aborted) {
+        model.dispose();
+        return;
+      }
+      cockpit = model;
+      scene.add(model.root);
+      const view = R34.camera;
+      camera.position.set(...view.eye);
+      camera.rotation.set(view.pitch, view.yaw, 0, "YXZ");
+      camera.fov = view.verticalFov;
+      camera.near = view.near;
+      camera.far = view.far;
+      tuneCockpit?.();
+      camera.updateProjectionMatrix();
+    })
+    .catch((error: unknown) => {
+      if (!cockpitLoad.signal.aborted) {
+        console.warn(
+          `R34 cockpit unavailable at ${R34.modelPath}. Showing the street.`,
+          error,
+        );
+      }
+    });
+}
+
 if (import.meta.hot) {
   import.meta.hot.dispose(() => {
     renderer.setAnimationLoop(null);
     window.removeEventListener("resize", resize);
     document.removeEventListener("visibilitychange", visibilityChanged);
     motionPreference.removeEventListener("change", motionChanged);
+    cockpitLoad.abort();
+    cockpit?.dispose();
     disposePreview?.();
     street.dispose();
     drawScene.dispose();

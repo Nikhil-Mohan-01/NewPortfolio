@@ -23,7 +23,7 @@ The 12.6 MB GLB contains 495 mesh primitives, 227,038 triangles, 26 source mater
 ## Milestones
 
 - [x] Inspect model structure and a rendered cabin, then commit the unchanged runtime asset and attribution.
-- [ ] Integrate model loading, fixed cockpit camera and fallback. Verify desktop and portrait framing.
+- [x] Integrate model loading, fixed cockpit camera and fallback. Verify desktop and portrait framing.
 - [ ] Tune glass, materials and synchronized spill. Verify loop and lifecycle, measure performance, and document the controls.
 
 ## Risks
@@ -34,6 +34,8 @@ The source's tiny scale, opposing axis, and twin transmissive glass surfaces cou
 
 - 2026-11-13. Inspected the embedded asset metadata, bounds, tree and material assignments. Created the feature branch from merged main.
 - 2026-11-13. Rendered the exterior, overhead cabin and both seat positions. Confirmed right-hand drive from the wheel, pedal area and driver instruments, with the center console to their left. Copied the source bytes unchanged to the Vite public directory.
+
+- 2026-11-13. Integrated asynchronous loading, the fixed right-hand-drive camera and clear double glazing. Inspected the cockpit at 1440 × 900 and 390 × 844. Captured an unoptimized cockpit sample at 346 scene draw calls.
 
 ## Verification
 
