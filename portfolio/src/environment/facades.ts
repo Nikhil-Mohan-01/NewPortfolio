@@ -62,6 +62,7 @@ function facade(
         ? palette.concrete
         : palette.plaster,
   ).multiplyScalar(0.82 + random() * 0.36);
+  const masonry = kind === "tile" ? materials.tile : materials.wall;
   const metal = "#2b2d38";
   const shadow = "#141623";
   const mullion = kind === "tile" ? "#514645" : "#414655";
@@ -100,7 +101,7 @@ function facade(
 
   // The smaller ground-floor volume leaves room for inset glazing and doors.
   box(
-    materials.wall,
+    masonry,
     wallColor,
     0,
     (shopHeight + height) / 2,
@@ -110,7 +111,7 @@ function facade(
     depth,
   );
   box(
-    materials.wall,
+    masonry,
     wallColor,
     0,
     shopHeight / 2,
@@ -144,6 +145,30 @@ function facade(
       depth,
     );
   }
+  if (quality === "standard" && (kind === "tile" || kind === "closed")) {
+    box(
+      materials.trim,
+      "#393942",
+      width / 2 - 0.24,
+      height * 0.49,
+      0.11,
+      0.068,
+      height * 0.98,
+      0.07,
+    );
+    for (let collar = 1; collar <= upper; collar++) {
+      box(
+        materials.trim,
+        "#53515a",
+        width / 2 - 0.24,
+        (height * collar) / (upper + 1),
+        0.11,
+        0.095,
+        0.045,
+        0.09,
+      );
+    }
+  }
   if (kind === "apartments" && depth > 8) {
     box(
       materials.wall,
@@ -172,7 +197,8 @@ function facade(
       const patternIndex =
         ((level - firstLitFloor + upper) % upper) * bays +
         ((bay - firstLitBay + bays) % bays);
-      const lit = patternIndex < litCount;
+      const lit =
+        kind === "closed" ? patternIndex === 0 : patternIndex < litCount;
       const windowColor = patternIndex % 3 === 0 ? "#9daac2" : palette.warm;
       box(materials.trim, mullion, u, y, 0.033, w + 0.13, h + 0.13, 0.09);
       box(
@@ -355,7 +381,7 @@ function facade(
   box(materials.trim, "#4e4a4e", door, 0.035, -0.01, 1.07, 0.069, 0.45);
   box(materials.trim, shadow, display, 1.34, -0.16, displayWidth, 1.74, 0.2);
   box(
-    materials.lit,
+    materials.interior,
     interior.clone().multiplyScalar(kind === "electronics" ? 0.45 : 0.57),
     display,
     1.34,

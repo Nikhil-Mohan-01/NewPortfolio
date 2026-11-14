@@ -3,7 +3,7 @@ import { seededRandom } from "./road";
 import { glazingTexture, signTextures, spillTexture } from "./textures";
 
 export function createFacadeMaterials(seed: number) {
-  const { texture: atlas } = signTextures();
+  const atlas = signTextures();
   const spillMap = spillTexture(seed);
   const random = seededRandom(seed + 42);
   const pattern = new Uint8Array(64 * 64 * 4);
@@ -23,6 +23,26 @@ export function createFacadeMaterials(seed: number) {
   const wall = new THREE.MeshStandardMaterial({
     map: plaster,
     roughness: 0.94,
+  });
+  const tilePattern = pattern.slice();
+  for (let y = 0; y < 64; y++) {
+    for (let x = 0; x < 64; x++) {
+      const joint = y % 8 === 0 || (x + (Math.floor(y / 8) % 2) * 4) % 8 === 0;
+      if (joint) {
+        const index = (y * 64 + x) * 4;
+        const value = tilePattern[index] * 0.64;
+        tilePattern.set([value, value, value], index);
+      }
+    }
+  }
+  const tileMap = new THREE.DataTexture(tilePattern, 64, 64);
+  tileMap.generateMipmaps = true;
+  tileMap.magFilter = THREE.LinearFilter;
+  tileMap.minFilter = THREE.LinearMipmapLinearFilter;
+  tileMap.needsUpdate = true;
+  const tile = new THREE.MeshStandardMaterial({
+    map: tileMap,
+    roughness: 0.88,
   });
   const trim = new THREE.MeshStandardMaterial({
     roughness: 0.82,
@@ -61,6 +81,7 @@ export function createFacadeMaterials(seed: number) {
 
   return {
     wall,
+    tile,
     trim,
     glass,
     lit,
@@ -72,7 +93,9 @@ export function createFacadeMaterials(seed: number) {
         atlas,
         spillMap,
         plaster,
+        tileMap,
         wall,
+        tile,
         trim,
         glass,
         lit,

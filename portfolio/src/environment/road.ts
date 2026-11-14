@@ -37,9 +37,33 @@ function asphaltTexture(seed: number) {
   return texture;
 }
 
+function pavementTexture(seed: number) {
+  const ctx = document.createElement("canvas").getContext("2d")!;
+  ctx.canvas.width = 64;
+  ctx.canvas.height = 128;
+  const random = seededRandom(seed);
+  const image = ctx.createImageData(64, 128);
+  for (let y = 0; y < 128; y++) {
+    for (let x = 0; x < 64; x++) {
+      const joint = y % 32 < 2 || x === 31;
+      const tileTint =
+        1 + 0.065 * Math.sin(Math.floor(y / 32) * 4 + Math.floor(x / 32) * 5);
+      const value = (joint ? 123 : 193 + random() * 26) * tileTint;
+      image.data.set([value, value, value, 255], (y * 64 + x) * 4);
+    }
+  }
+  ctx.putImageData(image, 0, 0);
+  const texture = new THREE.CanvasTexture(ctx.canvas);
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.y = 8;
+  texture.anisotropy = 4;
+  return texture;
+}
+
 export function createRoadKit(seed: number, asphalt = "#11151d") {
   const { laneWidth, pavementWidth, curbHeight, chunkLength } = STREET;
   const texture = asphaltTexture(seed);
+  const pavementMap = pavementTexture(seed + 1);
   const road = new THREE.PlaneGeometry(laneWidth, chunkLength);
   road.rotateX(-Math.PI / 2);
   road.translate(0, 0, -chunkLength / 2);
@@ -63,7 +87,7 @@ export function createRoadKit(seed: number, asphalt = "#11151d") {
   });
   const pavementMaterial = new THREE.MeshStandardMaterial({
     color: "#3b3b45",
-    map: texture,
+    map: pavementMap,
     roughness: 0.93,
   });
   const paintMaterial = new THREE.MeshStandardMaterial({
@@ -100,6 +124,7 @@ export function createRoadKit(seed: number, asphalt = "#11151d") {
     dispose() {
       for (const resource of [
         texture,
+        pavementMap,
         road,
         kerb,
         pavement,

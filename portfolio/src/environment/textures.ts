@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { seededRandom } from "./road";
 
-export const SIGN_NAMES = [
+const SIGN_NAMES = [
   "LANTERN",
   "NIGHT BOWL",
   "PLUM HOUSE",
@@ -73,9 +73,9 @@ export function signTextures() {
       const letters = name.split(" ")[0].slice(0, 5).split("");
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.font = "bold 50px Arial, sans-serif";
+      const step = Math.min(30, 102 / letters.length);
+      ctx.font = `bold ${Math.floor(step * 1.21)}px Arial, sans-serif`;
       ctx.fillStyle = "#ececec";
-      const step = Math.min(27, 91 / letters.length);
       letters.forEach((letter, line) => {
         ctx.fillText(letter, 64, 64 + (line - (letters.length - 1) / 2) * step);
       });
@@ -85,7 +85,7 @@ export function signTextures() {
   const texture = new THREE.CanvasTexture(ctx.canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 8;
-  return { texture };
+  return texture;
 }
 
 export function signUv(sign: number, vertical: boolean) {
