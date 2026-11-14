@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import type { StreetOptions, TokyoStreet } from "../environment";
 
+import type { RetroCamera } from "./retro";
+
 const params = new URLSearchParams(location.search);
 
 function bounded(key: string, fallback: number, min: number, max: number) {
@@ -41,13 +43,20 @@ export function installPreviewApi(
   scene: THREE.Scene,
   camera: THREE.PerspectiveCamera,
   renderer: THREE.WebGLRenderer,
+  retro: RetroCamera,
 ) {
+  const preset = params.get("filter");
+  if (preset === "clean" || preset === "subtle" || preset === "retro") {
+    retro.setPreset(preset);
+  }
+  retro.settings.strength = bounded("strength", retro.settings.strength, 0, 1);
   const { info } = renderer;
   let last = { calls: 0, triangles: 0, geometries: 0, textures: 0 };
   const preview = {
     street,
     camera,
     scene,
+    retro,
     get stats() {
       return last;
     },
