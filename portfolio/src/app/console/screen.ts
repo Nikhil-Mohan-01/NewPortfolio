@@ -6,7 +6,13 @@ import {
   type Object3D,
   type PerspectiveCamera,
 } from "three";
-import { apps, pixelIcon, type AppId } from "../dashboard/apps";
+import {
+  appIcon,
+  apps,
+  dockApps,
+  homeGlyph,
+  type AppId,
+} from "../dashboard/apps";
 import { bindIntentionalClick } from "../intentional-click";
 import { CONSOLE } from "./config";
 import "./style.css";
@@ -27,11 +33,14 @@ export function mountConsoleScreen(
   screen.setAttribute("role", "group");
   screen.setAttribute("aria-label", "Centre console dashboard");
   screen.innerHTML = `
-    <button class="console-home" type="button" aria-label="Open dashboard home on centre console" data-app="home"><span>NIKHIL OS</span><span aria-hidden="true">↗</span></button>
+    <div class="app-dock" role="group" aria-label="Centre console shortcuts">
+      <button class="app-dock-home" type="button" aria-label="Open dashboard home on centre console" data-app="home">${homeGlyph}</button>
+      ${dockApps.map((app) => `<button type="button" aria-label="${app.label} shortcut" data-app="${app.id}">${appIcon(app)}</button>`).join("")}
+    </div>
     <div class="console-apps">${apps
       .map(
         (app) => `
-      <button type="button" data-app="${app.id}" style="--app-color:${app.color}">${pixelIcon(app)}<span>${app.label}</span></button>
+      <button type="button" data-app="${app.id}">${appIcon(app)}<span>${app.label}</span></button>
     `,
       )
       .join("")}</div>`;

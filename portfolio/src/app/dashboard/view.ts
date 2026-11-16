@@ -1,4 +1,4 @@
-import { apps, pixelIcon } from "./apps";
+import { appIcon, apps, dockApps, homeGlyph } from "./apps";
 import {
   education,
   experience,
@@ -10,6 +10,7 @@ import {
 import { NIGHT_MUSIC } from "../music/config";
 import type { DashboardRoute } from "./routes";
 import "./style.css";
+import "./launcher.css";
 
 const external = (label: string, url: string, style = "os-action") =>
   `<a class="${style}" href="${url}" target="_blank" rel="noopener noreferrer">${label}<span aria-hidden="true">↗</span></a>`;
@@ -34,7 +35,7 @@ export function createDashboard(root: HTMLElement) {
         <header class="os-header">
           <div class="os-header-inner">
             <a href="#/home" class="os-brand" aria-label="Nikhil OS home">
-              <span class="os-mark" aria-hidden="true"><i></i></span><span>NIKHIL<span class="os-brand-accent"> OS</span></span>
+              <span class="os-mark">${homeGlyph}</span><span>Nikhil<span class="os-brand-accent"> OS</span></span>
             </a>
             <nav class="os-header-actions" aria-label="Dashboard navigation">
               <a href="#/home">Home</a>
@@ -46,7 +47,7 @@ export function createDashboard(root: HTMLElement) {
         ${
           app
             ? `<nav class="os-tabs" aria-label="Portfolio sections">
-          ${apps.map(({ id, label }) => `<a href="#/${id}" ${id === route.id ? 'aria-current="page"' : ""}>${label}</a>`).join("")}
+          ${apps.map(({ id, label }) => `<a href="#/${id}" data-launch-app="${id}" ${id === route.id ? 'aria-current="page"' : ""}>${label}</a>`).join("")}
         </nav>`
             : ""
         }
@@ -79,27 +80,31 @@ function renderRoute(route: DashboardRoute, title: string) {
     return `
     <section class="os-hero">
       <div class="os-hero-main">
-        <span class="os-eyebrow"><i></i> Waterloo · Computer Science</span>
+        <span class="os-eyebrow">Waterloo · Computer Science</span>
         <h1 tabindex="-1">Nikhil <strong>Mohan</strong></h1>
         <p>${profile.headline}</p>
         <div class="os-actions"><a class="os-action is-accent" href="#/projects">View projects <span aria-hidden="true">→</span></a><a class="os-action" href="#/contact">Get in touch <span aria-hidden="true">↗</span></a></div>
       </div>
       <aside class="os-hero-profile">
-        <span class="os-profile-label">ABOUT ME</span>
         <p>${profile.intro}</p>
         <a href="#/about">More about me <span aria-hidden="true">→</span></a>
       </aside>
     </section>
     <section class="os-launcher" aria-labelledby="launcher-label">
       <h2 id="launcher-label">Dashboard</h2>
-      <div class="os-apps">${apps
-        .map(
-          (app) => `
-        <a class="os-app" href="#/${app.id}" style="--app-color:${app.color}">
-          ${pixelIcon(app)}<span>${app.label}</span><b aria-hidden="true">↗</b>
+      <div class="os-launcher-shell">
+        <nav class="app-dock" aria-label="Dashboard shortcuts">
+          <a class="app-dock-home" aria-label="Home" aria-current="page" href="#/home">${homeGlyph}</a>
+          ${dockApps.map((app) => `<a href="#/${app.id}" aria-label="${app.label}" data-launch-app="${app.id}">${appIcon(app)}</a>`).join("")}
+        </nav>
+        <div class="os-apps">${apps
+          .map(
+            (app) => `
+        <a class="os-app" href="#/${app.id}" data-launch-app="${app.id}">
+          ${appIcon(app)}<span>${app.label}</span>
         </a>`,
-        )
-        .join("")}
+          )
+          .join("")}</div>
       </div>
     </section>`;
 

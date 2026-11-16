@@ -1,0 +1,145 @@
+.app-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--icon-size, 76px);
+  aspect-ratio: 1;
+  border: 1px solid #ffffff36;
+  border-radius: 25%;
+  background: linear-gradient(153deg, var(--app-light), var(--app-dark) 90%);
+  box-shadow:
+    0 5px 12px #05091154,
+    inset 0 1px #ffffff36;
+  color: #fff;
+}
+
+.app-icon svg {
+  display: block;
+  width: 54%;
+  filter: drop-shadow(0 1px 1px #10152855);
+}
+
+.app-dock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dock-gap, 14px);
+  border-right: 1px solid #ffffff15;
+  background: #0b0d17ad;
+}
+
+.app-dock > :is(a, button) {
+  display: grid;
+  place-items: center;
+  width: var(--dock-item, 44px);
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 25%;
+  background: transparent;
+  color: #f7f9ff;
+}
+
+.app-dock .app-dock-home {
+  background: #333951;
+}
+
+.app-dock-home svg {
+  width: 54%;
+}
+
+.app-dock > :is(a, button):hover {
+  background: #48516b;
+}
+
+.app-dock .app-icon {
+  --icon-size: var(--dock-icon, 29px);
+}
+
+.os-launcher-shell,
+.console-screen {
+  background:
+    radial-gradient(ellipse at 85% 0%, #48487485, transparent 68%),
+    radial-gradient(ellipse at 12% 100%, #273c6480, transparent 75%),
+    linear-gradient(135deg, #151c2e, #131421 75%);
+}
+
+.os-launcher-shell {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid #3a405a;
+  border-radius: 24px;
+  box-shadow: 0 22px 40px #080a1480;
+}
+
+.os-apps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  justify-self: center;
+  width: min(100%, 830px);
+  padding: 25px 22px;
+  column-gap: 8px;
+  row-gap: 16px;
+}
+
+.os-app {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 8px;
+  min-height: 104px;
+  padding: 5px 0;
+  border-radius: 12px;
+  color: #fff;
+  text-decoration: none;
+  font: 630 15px/1.3 var(--os-sans);
+  transition: background 150ms ease;
+}
+
+.os-app:hover,
+.os-app:focus-visible {
+  background: #afc3ff18;
+}
+
+.os-app .app-icon {
+  transition: scale 150ms ease;
+}
+
+.os-app:active .app-icon {
+  scale: 0.94;
+}
+
+@media (max-width: 570px) {
+  .os-launcher-shell {
+    grid-template-columns: 48px minmax(0, 1fr);
+    border-radius: 17px;
+  }
+
+  .os-apps {
+    padding: 13px 8px;
+    column-gap: 3px;
+    row-gap: 8px;
+  }
+
+  .os-app {
+    --icon-size: clamp(36px, 11vw, 58px);
+    min-height: 73px;
+    font-size: clamp(9px, 2.7vw, 13px);
+    gap: 5px;
+  }
+
+  .os-launcher-shell .app-dock {
+    --dock-item: 34px;
+    --dock-icon: 24px;
+    --dock-gap: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-app,
+  .os-app .app-icon {
+    transition: none;
+  }
+}
