@@ -13,6 +13,8 @@ export const DRIVER_LOOK = {
     horizontal: [-0.996, 0, 0.09],
     standoff: 0.00008,
     halfWidth: 0.00053,
-    hitSizePixels: 44,
+    hitHeightPixels: 44,
+    minWidthPixels: 78,
+    maxWidthPixels: 120,
   },
 } as const;

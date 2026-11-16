@@ -144,7 +144,12 @@ export function createDriverLook(
   canvas.addEventListener(
     "click",
     (event) => {
-      if (event.detail === 0 || event.pointerId !== suppressClickFor) return;
+      if (
+        event.detail === 0 ||
+        suppressClickFor === undefined ||
+        ("pointerId" in event && event.pointerId !== suppressClickFor)
+      )
+        return;
       suppressClickFor = undefined;
       event.preventDefault();
       event.stopImmediatePropagation();

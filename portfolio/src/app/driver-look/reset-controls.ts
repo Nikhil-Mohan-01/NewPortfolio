@@ -116,14 +116,14 @@ export function mountResetControls(
     const dx = ((rightNdc.x - leftNdc.x) * width) / 2;
     const dy = ((leftNdc.y - rightNdc.y) * height) / 2;
     const targetWidth = Math.max(
-      anchor.hitSizePixels,
-      Math.min(120, Math.hypot(dx, dy)),
+      anchor.minWidthPixels,
+      Math.min(anchor.maxWidthPixels, Math.hypot(dx, dy)),
     );
     const angle = Math.atan2(dy, dx);
     const cos = Math.abs(Math.cos(angle));
     const sin = Math.abs(Math.sin(angle));
-    const marginX = (targetWidth * cos + anchor.hitSizePixels * sin) / 2;
-    const marginY = (targetWidth * sin + anchor.hitSizePixels * cos) / 2;
+    const marginX = (targetWidth * cos + anchor.hitHeightPixels * sin) / 2;
+    const marginY = (targetWidth * sin + anchor.hitHeightPixels * cos) / 2;
     const visible =
       clear &&
       ndc.z > -1 &&
@@ -248,7 +248,9 @@ function bindIntentionalClick(
     "click",
     (event) => {
       const intentional =
-        event.detail === 0 || allowedClick === event.pointerId;
+        event.detail === 0 ||
+        (allowedClick !== undefined &&
+          (!("pointerId" in event) || allowedClick === event.pointerId));
       allowedClick = undefined;
       if (intentional) activate();
       else event.preventDefault();

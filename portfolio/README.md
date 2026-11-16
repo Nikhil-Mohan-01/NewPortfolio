@@ -9,6 +9,14 @@ npm run dev
 
 Open the URL printed by Vite. The street renders as the local R34 model loads, then the camera switches to the right-hand driver's seat. The street travels at 6 m/s by default. The driver's eye and the car stay fixed. A system reduced-motion preference starts the street stationary.
 
+## Driver look
+
+Hold the left mouse button and drag on the scene to look around. Touch devices use one-finger drag on the canvas, leaving HTML overlays available for their own input. The eye stays fixed. Yaw can move 60° to either side and pitch can move 45° up or down from the starting view.
+
+Use **Reset View** below the radio or at the bottom-right edge to return to the starting view. The edge control remains available when the console moves out of frame, including the default view on narrow portrait screens. For keyboard use, Tab to the driver view and use the arrow keys in 3° steps. Tab onward to a reset button and press Enter or Space. Reduced motion makes dragging and resetting immediate. Looking and resetting also work while the street is paused.
+
+The original eye and aim are in [`src/cockpit/config.ts`](src/cockpit/config.ts). The look limits, sensitivity, smoothing, and physical console anchor are in [`src/app/driver-look/config.ts`](src/app/driver-look/config.ts). Both reset controls use the same saved cockpit pose and reset function.
+
 ## Development preview
 
 These query parameters and the browser console API are available in development.
