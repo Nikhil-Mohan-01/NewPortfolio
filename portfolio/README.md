@@ -9,6 +9,14 @@ npm run dev
 
 Open the URL printed by Vite. The street renders as the local R34 model loads, then the camera switches to the right-hand driver's seat. The street travels at 6 m/s by default. The driver's eye and the car stay fixed. A system reduced-motion preference starts the street stationary.
 
+## Headlights and music
+
+The R34 carries two warm headlights and a restrained overhead fill. Adjust aim, beam width, intensity and falloff in [`src/cockpit/lighting-config.ts`](src/cockpit/lighting-config.ts). Three.js light intensities are in candela. The headlights use a shared beam mask and ship without shadow maps. The cabin fill has a short range that keeps it off the road.
+
+Select **Play music** in the upper-right controls to start the optional soundtrack. Pause, mute and volume are independent of the drive and the camera. The player pauses when the page is hidden and attempts to resume only if playback was active or requested and audible when the page was hidden.
+
+The bundled track is **Exploration Theme** by Cleyton Kauffman, released under CC0 1.0. Replace `public/audio/night-drive.mp3` for a custom MP3 or change the source path in [`src/app/music/config.ts`](src/app/music/config.ts). [Track attribution](public/audio/ATTRIBUTION.md) · [Replacement guide](public/audio/README.md)
+
 ## Driver look
 
 Hold the left mouse button and drag on the scene to look around. Touch devices use one-finger drag on the canvas, leaving HTML overlays available for their own input. The eye stays fixed. Yaw can move 60° to either side and pitch can move 45° up or down from the starting view.
