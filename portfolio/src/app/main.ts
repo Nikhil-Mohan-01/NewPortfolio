@@ -4,6 +4,7 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { R34 } from "../cockpit/config";
+import { mountCarLighting } from "../cockpit/lighting";
 import { CAMERA, createTokyoStreet, type StreetOptions } from "../environment";
 import { createDriverLook } from "./driver-look/controller";
 import { mountResetControls } from "./driver-look/reset-controls";
@@ -61,6 +62,7 @@ const retro = createRetroCamera(composer, standard);
 
 let driverLook: ReturnType<typeof createDriverLook> | undefined;
 let resetControls: ReturnType<typeof mountResetControls> | undefined;
+let disposeCarLighting: (() => void) | undefined;
 let lastFrame: number | undefined;
 let disposePreview: (() => void) | undefined;
 if (import.meta.env.DEV) {
@@ -121,6 +123,7 @@ if (cockpitRequested) {
         return;
       }
       cockpit = model;
+      disposeCarLighting = mountCarLighting(model.root);
       scene.add(model.root);
       const view = R34.camera;
       camera.position.set(...view.eye);
@@ -163,6 +166,7 @@ if (import.meta.hot) {
     cockpitLoad.abort();
     resetControls?.dispose();
     driverLook?.dispose();
+    disposeCarLighting?.();
     cockpit?.dispose();
     disposePreview?.();
     street.dispose();
