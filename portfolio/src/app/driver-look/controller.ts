@@ -28,6 +28,7 @@ export function createDriverLook(
   const target: Angles = { yaw: 0, pitch: 0 };
   const abort = new AbortController();
   const options = { signal: abort.signal };
+  let enabled = true;
   let gesture: Gesture | undefined;
   let suppressClickFor: number | undefined;
   let resetStart: Angles | undefined;
@@ -81,6 +82,7 @@ export function createDriverLook(
     (event) => {
       suppressClickFor = undefined;
       if (
+        !enabled ||
         event.target !== canvas ||
         gesture ||
         !event.isPrimary ||
@@ -169,6 +171,7 @@ export function createDriverLook(
     "keydown",
     (event) => {
       if (
+        !enabled ||
         event.target !== canvas ||
         document.activeElement !== canvas ||
         event.altKey ||
@@ -205,7 +208,17 @@ export function createDriverLook(
   }
 
   return {
+    setEnabled(next: boolean) {
+      if (enabled === next) return;
+      enabled = next;
+      if (!enabled) {
+        endGesture();
+        resetStart = undefined;
+        Object.assign(target, current);
+      }
+    },
     reset() {
+      if (!enabled) return;
       endGesture();
       target.yaw = target.pitch = 0;
       if (reducedMotion.matches) {
@@ -216,6 +229,7 @@ export function createDriverLook(
       }
     },
     update(delta: number) {
+      if (!enabled) return;
       const dt = MathUtils.clamp(delta, 0, 0.05);
       if (resetStart) {
         resetElapsed += dt;

@@ -217,3 +217,12 @@ body,
     top: 64px;
   }
 }
+
+.drive-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: #101719;
+  opacity: 0;
+  pointer-events: none;
+}

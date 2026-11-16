@@ -1,0 +1,79 @@
+.console-screen {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 248px;
+  height: 132px;
+  box-sizing: border-box;
+  padding: 5px;
+  transform-origin: 0 0;
+  border: 3px solid #252f2e;
+  outline: 2px solid #080c0c;
+  background: #101a1c;
+  box-shadow:
+    0 3px 0 #08090a,
+    inset 0 0 0 1px #4b5c50;
+  color: #edf1df;
+  font-family: var(--os-mono);
+}
+.console-screen button {
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+  touch-action: manipulation;
+}
+.console-home {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  height: 21px;
+  padding: 0 5px;
+  border: 0;
+  border-bottom: 1px solid #537452;
+  background: #202e27;
+  color: #c4edaa !important;
+  font-size: 11pt;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+}
+.console-apps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(2, 42px);
+  gap: 3px;
+  margin-top: 4px;
+}
+.console-apps button {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid #414d48;
+  background: #1b2a29;
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.console-screen button:hover,
+.console-screen button:focus-visible {
+  border-color: var(--app-color, #b5e48c);
+  background: #354a38;
+}
+.console-screen button:focus-visible {
+  outline: 2px solid #c9f2af;
+  outline-offset: -2px;
+}
+.console-screen button:active {
+  background: #415643;
+}
+.console-screen .pixel-icon {
+  width: 26px;
+  height: 23px;
+  border: 0;
+  background: none;
+  font-size: 1.6px;
+}

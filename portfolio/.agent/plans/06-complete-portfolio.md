@@ -22,7 +22,7 @@ The lighting and music branch contains the latest complete cockpit, including dr
 ## Milestones
 
 - [x] Deliver content, shareable routes, launcher, resume and contact.
-- [ ] Integrate the real console and transition, restore the driver view and keep independent reading access.
+- [x] Integrate the real console and transition, restore the driver view and keep independent reading access.
 - [ ] Exercise desktop, mobile, failure, navigation, and production flows. Document findings.
 
 ## Risks
@@ -34,6 +34,8 @@ The radio is small at the default driver pose. Maintain a persistent full-size d
 - 2026-11-16. Inspected the repository and current reference, located the authorized resume, and checked external destinations.
 
 - 2026-11-16. Built the eight-app launcher, typed content and hash-routed sections. Verified all project details, original PDF response and download, email fallback, music navigation and portrait reading in Chrome.
+
+- 2026-11-16. Mounted the console launcher and added camera handoff in the existing loop. Chrome verified direct Projects and Experience launches, exact pose/focus restoration, browser Back, and a stationary hidden scene.
 
 ## Verification
 
