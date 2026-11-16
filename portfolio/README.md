@@ -1,4 +1,4 @@
-# R34 cockpit preview
+# Nikhil Mohan’s portfolio
 
 From this directory, install the locked dependencies and start the preview.
 
@@ -7,7 +7,11 @@ npm ci
 npm run dev
 ```
 
-Open the URL printed by Vite. The street renders as the local R34 model loads, then the camera switches to the right-hand driver's seat. The street travels at 6 m/s by default. The driver's eye and the car stay fixed. A system reduced-motion preference starts the street stationary.
+Open the URL printed by Vite. Desktop opens the R34 night drive. Phones and touch-first devices start with the reading dashboard and can choose **Explore the Car**. Open any app on the centre console or use **Open Dashboard**. Return to Car restores your prior view, while Reset View restores the original driver pose.
+
+Use `#/simple` for the reading launcher, `#/projects` for the catalogue, or `#/projects/protomind` for a direct project link. App navigation is shareable and supports browser Back and Forward. Escape moves from a detail to Projects, from a section to Home, and from Home back to an already loaded car. The readable site and original PDF work without loading the 3D engine. The original city travels at 6 m/s. Reduced motion starts it stationary and skips the console camera travel.
+
+Edit [portfolio content](src/app/dashboard/content.ts), [launcher apps](src/app/dashboard/apps.ts), and the [console pose](src/app/console/config.ts) in their respective modules. Replace `public/resume/Nikhil_Mohan_Resume.pdf` to update the PDF while keeping the same URL. For provenance and local verification, see the [completion plan](.agent/plans/06-complete-portfolio.md).
 
 ## Headlights and music
 

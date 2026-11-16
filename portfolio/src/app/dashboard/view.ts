@@ -144,7 +144,7 @@ function renderRoute(route: DashboardRoute, title: string) {
       return (
         header +
         `<div class="os-prose"><p class="os-lead">${NIGHT_MUSIC.creditTitle}</p><p>Playback carries between the dashboard and the car.</p>
-        <div data-music-slot></div>${external("Track credits", NIGHT_MUSIC.creditUrl)}</div>`
+        <div data-music-slot></div></div>`
       );
     default:
       return (
@@ -255,11 +255,19 @@ async function copyEmail(event: MouseEvent) {
     range.selectNodeContents(email);
     selection.removeAllRanges();
     selection.addRange(range);
-    if (document.execCommand("copy")) {
+    if (copySelection()) {
       status.textContent = "Email copied.";
       selection.removeAllRanges();
     } else {
       status.textContent = "Email selected. Use your device’s copy command.";
     }
+  }
+}
+
+function copySelection() {
+  try {
+    return document.execCommand("copy");
+  } catch {
+    return false;
   }
 }

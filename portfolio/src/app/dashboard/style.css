@@ -6,8 +6,8 @@
   --os-text: #edf1df;
   --os-muted: #b6c4bb;
   --os-accent: #b5e48c;
-  --os-mono: ui-monospace, "Courier New", monospace;
-  --os-sans: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --os-mono: "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+  --os-sans: Inter, "Avenir Next", "Segoe UI", system-ui, sans-serif;
 }
 
 [hidden] {
@@ -180,7 +180,7 @@
 .os-section-heading h1 {
   margin: 12px 0 14px;
   font: 750 clamp(40px, 7.1vw, 92px)/0.99 var(--os-sans);
-  letter-spacing: -0.075em;
+  letter-spacing: -0.06em;
 }
 .os-hero h1 strong {
   color: var(--os-accent);
