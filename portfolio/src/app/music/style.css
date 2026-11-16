@@ -1,0 +1,68 @@
+.night-music {
+  position: absolute;
+  z-index: 1;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  max-width: calc(100% - 24px);
+  color: #ded3c6;
+  font:
+    500 12px/1.25 ui-monospace,
+    monospace;
+}
+
+.night-music-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px 8px;
+  padding: 2px 6px;
+  border: 1px solid #62564e;
+  border-radius: 4px;
+  background: #15151df2;
+}
+
+.night-music button {
+  min-height: 40px;
+  padding: 0 4px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.night-music button:hover,
+.night-music button[aria-pressed="true"] {
+  border-color: #8d6d54;
+  background: #392d26;
+  color: #ffdab5;
+}
+
+.night-music input {
+  width: clamp(48px, 16vw, 70px);
+  height: 34px;
+  margin: 0;
+  accent-color: #efc394;
+}
+
+.night-music a {
+  padding: 8px 0;
+  color: #c2bcb6;
+}
+
+.night-music :focus-visible {
+  outline: 2px solid #efc394;
+  outline-offset: 1px;
+}
+
+.night-music-status {
+  max-width: 26ch;
+  margin: 4px 0 0 auto;
+  background: #15151df2;
+}
+
+.night-music-status:not(:empty) {
+  padding: 6px;
+}

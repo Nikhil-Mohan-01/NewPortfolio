@@ -20,7 +20,7 @@ The existing driver-look commits are on GitHub and the checked-out branch. GitHu
 ## Milestones
 
 - [x] Capture the baseline and tune the headlight/cabin rig against the moving road and cockpit.
-- [ ] Bundle the licensed loop, wire opt-in playback and verify controls, seams and lifecycle.
+- [x] Bundle the licensed loop, wire opt-in playback and verify controls, seams and lifecycle.
 
 ## Risks
 
@@ -31,6 +31,8 @@ A lighting bump in the scene-wide exposure would wash out the city. Check for a 
 - 2026-11-16. Captured the existing paused cockpit at 1440 × 900, DPR 1, and probed the front lens vertices. Found CC0 source archive and confirmed author and license on the creator's asset page.
 
 - 2026-11-16. Tuned two headlights with a shared beam mask to lower the wash on facades and a short overhead spotlight to reveal the wheel and dash. Compared desktop and side views at the existing camera pose.
+
+- 2026-11-16. Added the CC0 stock MP3, lazy Web Audio player and native controls. Checked gesture ownership, pause and mute intent, one decode, retry, and two native-speed loop boundaries in Chrome.
 
 ## Verification
 
