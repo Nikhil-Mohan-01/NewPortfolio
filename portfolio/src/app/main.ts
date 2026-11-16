@@ -8,7 +8,6 @@ import { mountCarLighting } from "../cockpit/lighting";
 import { CAMERA, createTokyoStreet, type StreetOptions } from "../environment";
 import { createDriverLook } from "./driver-look/controller";
 import { mountResetControls } from "./driver-look/reset-controls";
-import { mountMusicControls } from "./music/controls";
 import { createRetroCamera } from "./retro";
 import "./style.css";
 
@@ -46,7 +45,6 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 container.append(renderer.domElement);
-const disposeMusic = mountMusicControls(container);
 
 const target = new THREE.WebGLRenderTarget(1, 1, {
   type: THREE.HalfFloatType,
@@ -166,7 +164,6 @@ if (import.meta.hot) {
     document.removeEventListener("visibilitychange", visibilityChanged);
     motionPreference.removeEventListener("change", motionChanged);
     cockpitLoad.abort();
-    disposeMusic();
     resetControls?.dispose();
     driverLook?.dispose();
     disposeCarLighting?.();

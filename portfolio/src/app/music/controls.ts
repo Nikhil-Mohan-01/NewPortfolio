@@ -3,7 +3,7 @@ import { NIGHT_MUSIC } from "./config";
 import { createNightMusic } from "./player";
 import "./style.css";
 
-export function mountMusicControls(container: HTMLElement) {
+export function createMusicControls() {
   const lifetime = new AbortController();
   const panel = document.createElement("section");
   panel.className = "night-music";
@@ -59,12 +59,12 @@ export function mountMusicControls(container: HTMLElement) {
     { signal: lifetime.signal },
   );
 
-  // Keep audio outside the canvas and renderer, including while the car is still loading.
-  container.prepend(panel);
-
-  return () => {
-    lifetime.abort();
-    player.dispose();
-    panel.remove();
+  return {
+    panel,
+    dispose() {
+      lifetime.abort();
+      player.dispose();
+      panel.remove();
+    },
   };
 }

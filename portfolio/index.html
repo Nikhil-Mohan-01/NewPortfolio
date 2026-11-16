@@ -3,11 +3,55 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#070911" />
-    <title>Tokyo Street</title>
+    <meta name="theme-color" content="#101719" />
+    <meta
+      name="description"
+      content="Nikhil Mohan, Waterloo Computer Science co-op student. Explore software engineering experience, AI tools, and interactive projects."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Nikhil Mohan | Software Engineering Portfolio"
+    />
+    <meta
+      property="og:description"
+      content="Explore Nikhil Mohan’s projects and experience inside a neon Tokyo night drive or in a simple reading view."
+    />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" href="%BASE_URL%favicon.svg" type="image/svg+xml" />
+    <title>Nikhil Mohan | Software Engineering Portfolio</title>
   </head>
   <body>
-    <main id="street" aria-label="Tokyo street at night"></main>
-    <script type="module" src="/src/app/main.ts"></script>
+    <div id="cockpit" hidden>
+      <main id="street" aria-label="Tokyo street at night"></main>
+      <section class="cockpit-entry" aria-label="Portfolio shortcuts">
+        <p class="cockpit-name">Nikhil Mohan</p>
+        <p>Computer Science at Waterloo</p>
+        <a class="cockpit-primary" href="#/home" data-open-dashboard
+          >Open Dashboard <span aria-hidden="true">↗</span></a
+        >
+        <nav aria-label="Direct portfolio links">
+          <a href="#/simple">Simple View</a><a href="#/resume">Resume</a
+          ><a href="#/contact">Contact</a>
+        </nav>
+      </section>
+    </div>
+    <div id="dashboard" aria-label="Portfolio dashboard" hidden></div>
+    <noscript>
+      <main class="noscript-fallback">
+        <h1>Nikhil Mohan</h1>
+        <p>
+          Computer Science at Waterloo. Building software, AI tools, and
+          interactive experiences.
+        </p>
+        <a href="%BASE_URL%resume/Nikhil_Mohan_Resume.pdf">Resume</a>
+        <a href="mailto:n24mohan@uwaterloo.ca">Email</a>
+        <a href="https://github.com/Nikhil-Mohan-01">GitHub</a>
+        <a href="https://www.linkedin.com/in/nikhil-mohan-7787372a6/"
+          >LinkedIn</a
+        >
+      </main>
+    </noscript>
+    <script type="module" src="/src/app/entry.ts"></script>
   </body>
 </html>
