@@ -5,6 +5,7 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { R34 } from "../cockpit/config";
 import { CAMERA, createTokyoStreet, type StreetOptions } from "../environment";
+import { createDriverLook } from "./driver-look/controller";
 import { createRetroCamera } from "./retro";
 import "./style.css";
 
@@ -57,6 +58,7 @@ composer.addPass(bloom);
 composer.addPass(output);
 const retro = createRetroCamera(composer, standard);
 
+let driverLook: ReturnType<typeof createDriverLook> | undefined;
 let lastFrame: number | undefined;
 let disposePreview: (() => void) | undefined;
 if (import.meta.env.DEV) {
@@ -78,6 +80,7 @@ function resize() {
 function frame(time: number) {
   const delta = (time - (lastFrame ?? time)) / 1000;
   street.update(delta);
+  driverLook?.update(delta);
   lastFrame = time;
   retro.update(
     delta,
@@ -123,6 +126,11 @@ if (cockpitRequested) {
       camera.far = view.far;
       tuneCockpit?.();
       camera.updateProjectionMatrix();
+      driverLook = createDriverLook(
+        camera,
+        renderer.domElement,
+        motionPreference,
+      );
     })
     .catch((error: unknown) => {
       if (!cockpitLoad.signal.aborted) {
@@ -141,6 +149,7 @@ if (import.meta.hot) {
     document.removeEventListener("visibilitychange", visibilityChanged);
     motionPreference.removeEventListener("change", motionChanged);
     cockpitLoad.abort();
+    driverLook?.dispose();
     cockpit?.dispose();
     disposePreview?.();
     street.dispose();
