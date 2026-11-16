@@ -6,6 +6,7 @@ import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js"
 import { R34 } from "../cockpit/config";
 import { CAMERA, createTokyoStreet, type StreetOptions } from "../environment";
 import { createDriverLook } from "./driver-look/controller";
+import { mountResetControls } from "./driver-look/reset-controls";
 import { createRetroCamera } from "./retro";
 import "./style.css";
 
@@ -59,6 +60,7 @@ composer.addPass(output);
 const retro = createRetroCamera(composer, standard);
 
 let driverLook: ReturnType<typeof createDriverLook> | undefined;
+let resetControls: ReturnType<typeof mountResetControls> | undefined;
 let lastFrame: number | undefined;
 let disposePreview: (() => void) | undefined;
 if (import.meta.env.DEV) {
@@ -74,6 +76,7 @@ function resize() {
   renderer.setPixelRatio(ratio);
   renderer.setSize(clientWidth, clientHeight, false);
   retro.resize(clientWidth, clientHeight, ratio);
+  resetControls?.resize();
   if (!document.hidden) composer.render();
 }
 
@@ -81,6 +84,7 @@ function frame(time: number) {
   const delta = (time - (lastFrame ?? time)) / 1000;
   street.update(delta);
   driverLook?.update(delta);
+  resetControls?.update();
   lastFrame = time;
   retro.update(
     delta,
@@ -131,6 +135,14 @@ if (cockpitRequested) {
         renderer.domElement,
         motionPreference,
       );
+      resetControls = mountResetControls(
+        container,
+        renderer.domElement,
+        camera,
+        model.root,
+        driverLook.reset,
+      );
+      resetControls.resize();
     })
     .catch((error: unknown) => {
       if (!cockpitLoad.signal.aborted) {
@@ -149,6 +161,7 @@ if (import.meta.hot) {
     document.removeEventListener("visibilitychange", visibilityChanged);
     motionPreference.removeEventListener("change", motionChanged);
     cockpitLoad.abort();
+    resetControls?.dispose();
     driverLook?.dispose();
     cockpit?.dispose();
     disposePreview?.();

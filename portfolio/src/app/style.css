@@ -27,3 +27,124 @@ body,
   outline: 2px solid #efc394;
   outline-offset: -3px;
 }
+
+#street {
+  position: relative;
+}
+
+.driver-look-hint,
+.driver-look-reset {
+  position: absolute;
+  font:
+    500 12px/1.25 ui-monospace,
+    monospace;
+}
+
+.driver-look-hint {
+  left: max(14px, env(safe-area-inset-left));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  max-width: calc(100% - 145px);
+  margin: 0;
+  padding: 6px 8px;
+  border-radius: 3px;
+  color: #d0cac4;
+  background: #0d0f17e8;
+  pointer-events: none;
+}
+
+.driver-look-reset {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  color: #f2c796;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.driver-look-console {
+  top: 0;
+  left: 0;
+}
+
+.driver-look-fallback {
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(6px, env(safe-area-inset-bottom));
+}
+
+.driver-look-plate {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 25px;
+  padding: 3px 7px;
+  border: 1px solid #695647;
+  border-radius: 3px;
+  background: #211d1c;
+  white-space: nowrap;
+}
+
+.driver-look-console .driver-look-plate {
+  width: 100%;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+  box-shadow:
+    inset 0 1px #6f615749,
+    0 2px #09090c;
+}
+
+.driver-look-fallback .driver-look-plate {
+  color: #e4d4c3;
+  background: #15151de8;
+  border-color: #62564e;
+}
+
+.driver-look-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.driver-look-reset:hover .driver-look-plate,
+.driver-look-reset:focus-visible .driver-look-plate {
+  border-color: #cf9d71;
+  background: #392d26;
+}
+
+.driver-look-reset:focus-visible {
+  outline: 2px solid #efc394;
+  outline-offset: 2px;
+}
+
+.driver-look-reset:active .driver-look-plate {
+  background: #48372b;
+  transform: translateY(1px);
+}
+
+.driver-look-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.driver-look-touch-hint {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .driver-look-mouse-hint {
+    display: none;
+  }
+
+  .driver-look-touch-hint {
+    display: inline;
+  }
+}

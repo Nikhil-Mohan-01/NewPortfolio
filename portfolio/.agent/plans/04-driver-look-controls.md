@@ -32,6 +32,8 @@ The GLB cabin and lighting were tuned for a fixed view. Inspect the extremes at 
 
 - 2026-11-16. Verified direction, independent diagonal clamps, reversal, blur, alternate mouse buttons and scene keyboard look. Raycast the cabin to locate a blank panel below the existing radio.
 
+- 2026-11-16. Mounted the reset on the lower radio panel and added the edge fallback. Verified both buttons, eight angle extremes, keyboard focus, reset interruption and touch emulation in Chrome.
+
 ## Verification
 
 Pending.
