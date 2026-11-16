@@ -4,7 +4,6 @@ body,
   width: 100%;
   height: 100%;
   margin: 0;
-  overflow: hidden;
   background: #070911;
 }
 
@@ -16,7 +15,7 @@ body,
 
 .driver-look-surface {
   cursor: grab;
-  touch-action: none;
+  touch-action: pan-y pinch-zoom;
 }
 
 .driver-look-surface.is-looking {
@@ -150,9 +149,55 @@ body,
   }
 }
 
+#drive-track {
+  height: calc(100dvh + var(--drive-scroll, 0px));
+}
+
+html.drive-locked {
+  overflow-y: hidden;
+}
+html {
+  overflow-anchor: none;
+}
+
 #cockpit {
-  position: fixed;
-  inset: 0;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.drive-progress {
+  position: absolute;
+  z-index: 2;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(260px, 41vw);
+  padding: 7px 11px;
+  text-align: center;
+  border-radius: 10px;
+  background: #10141ce8;
+  color: #eef2fb;
+  font:
+    650 12px/1.35 system-ui,
+    sans-serif;
+}
+.drive-progress progress {
+  display: block;
+  width: 100%;
+  height: 5px;
+  margin-top: 5px;
+  accent-color: #87b4ff;
+}
+.drive-progress button {
+  margin-top: 6px;
+}
+@media (max-width: 680px) {
+  .drive-progress {
+    bottom: 58px;
+  }
 }
 
 .cockpit-entry {

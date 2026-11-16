@@ -22,21 +22,33 @@
     <title>Nikhil Mohan | Software Engineering Portfolio</title>
   </head>
   <body>
-    <div id="cockpit" hidden>
-      <main id="street" aria-label="Tokyo street at night"></main>
-      <section class="cockpit-entry" aria-label="Portfolio shortcuts">
-        <p class="cockpit-name">Nikhil Mohan</p>
-        <p>Computer Science at Waterloo</p>
-        <a class="cockpit-primary" href="#/home" data-open-dashboard
-          >Open Dashboard <span aria-hidden="true">↗</span></a
-        >
-        <nav aria-label="Direct portfolio links">
-          <a href="#/simple">Simple View</a
-          ><a href="#/resume" data-direct-link>Resume</a
-          ><a href="#/contact" data-direct-link>Contact</a>
-        </nav>
-      </section>
-      <div class="drive-veil" aria-hidden="true"></div>
+    <div id="drive-track" hidden>
+      <div id="cockpit" hidden>
+        <main id="street" aria-label="Tokyo street at night"></main>
+        <section class="cockpit-entry" aria-label="Portfolio shortcuts">
+          <p class="cockpit-name">Nikhil Mohan</p>
+          <p>Computer Science at Waterloo</p>
+          <a class="cockpit-primary" href="#/home" data-open-dashboard
+            >Open Dashboard <span aria-hidden="true">↗</span></a
+          >
+          <nav aria-label="Direct portfolio links">
+            <a href="#/simple">Simple View</a
+            ><a href="#/resume" data-direct-link>Resume</a
+            ><a href="#/contact" data-direct-link>Contact</a>
+          </nav>
+        </section>
+        <section class="drive-progress" aria-label="Drive position">
+          <label for="route-progress">Scroll to drive</label>
+          <progress
+            id="route-progress"
+            max="100"
+            value="0"
+            aria-label="Route progress"
+          ></progress>
+          <button type="button" data-start hidden>Back to Start</button>
+        </section>
+        <div class="drive-veil" aria-hidden="true"></div>
+      </div>
     </div>
     <div id="dashboard" aria-label="Portfolio dashboard" hidden></div>
     <noscript>

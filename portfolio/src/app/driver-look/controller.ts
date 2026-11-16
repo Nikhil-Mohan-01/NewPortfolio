@@ -83,6 +83,7 @@ export function createDriverLook(
       suppressClickFor = undefined;
       if (
         !enabled ||
+        event.pointerType === "touch" ||
         event.target !== canvas ||
         gesture ||
         !event.isPrimary ||

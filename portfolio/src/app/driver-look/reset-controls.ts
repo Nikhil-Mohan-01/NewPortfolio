@@ -25,7 +25,7 @@ export function mountResetControls(
   mouseHint.textContent = "Hold left click and drag to look around.";
   const touchHint = document.createElement("span");
   touchHint.className = "driver-look-touch-hint";
-  touchHint.textContent = "Drag to look around.";
+  touchHint.textContent = "Swipe to drive.";
   const keyboardHint = document.createElement("span");
   keyboardHint.className = "driver-look-sr";
   keyboardHint.textContent =

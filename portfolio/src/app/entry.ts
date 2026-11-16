@@ -1,11 +1,13 @@
 import { createDashboard } from "./dashboard/view";
 import { readRoute, type DashboardRoute } from "./dashboard/routes";
+import { createScrollDrive } from "./drive/scroll";
 import type { DriveScene } from "./main";
 import { createMusicControls } from "./music/controls";
 import "./style.css";
 
 type Phase = "cockpit" | "entering" | "dashboard" | "exiting";
 
+const track = document.querySelector<HTMLElement>("#drive-track")!;
 const cockpit = document.querySelector<HTMLElement>("#cockpit")!;
 const street = document.querySelector<HTMLElement>("#street")!;
 const dashboard = document.querySelector<HTMLElement>("#dashboard")!;
@@ -14,15 +16,26 @@ const view = createDashboard(dashboard);
 const music = createMusicControls();
 const listeners = new AbortController();
 const options = { signal: listeners.signal };
+const originalScrollRestoration = history.scrollRestoration;
+history.scrollRestoration = "manual";
 let phase: Phase = "cockpit";
 let scene: DriveScene | undefined;
 let loading = false;
 let sceneUnavailable = false;
 let opener: HTMLElement | undefined;
 let shownHash: string | undefined;
+const progressMeter =
+  document.querySelector<HTMLProgressElement>("#route-progress")!;
+const startButton = cockpit.querySelector<HTMLButtonElement>("[data-start]")!;
+const drive = createScrollDrive(track, (progress) => {
+  progressMeter.value = 100 * progress;
+  startButton.hidden = progress < 0.999;
+});
+startButton.addEventListener("click", () => drive.go(0), options);
 
 function showDashboard(route: DashboardRoute, moveFocus: boolean) {
   phase = "dashboard";
+  drive.lock(true);
   scene?.setInteraction(false);
   scene?.setActive(false);
   cockpit.inert = true;
@@ -57,6 +70,7 @@ function loadScene() {
     .then(({ mountScene }) => {
       if (listeners.signal.aborted) return;
       return mountScene(street, {
+        drive,
         open(app, element) {
           if (phase !== "cockpit") return;
           opener = element;
@@ -82,6 +96,7 @@ function loadScene() {
 
 function revealCockpit() {
   dashboard.hidden = true;
+  track.hidden = false;
   cockpit.hidden = false;
   street.prepend(music.panel);
   scene?.setActive(true);
@@ -93,6 +108,7 @@ function settleCockpit(restoreFocus: boolean) {
   shownHash = undefined;
   revealCockpit();
   cockpit.inert = false;
+  drive.lock(false);
   scene?.setInteraction(true);
   loadScene();
   if (restoreFocus) {
@@ -139,6 +155,7 @@ function sync(moveFocus = true) {
     })
   ) {
     phase = "entering";
+    drive.lock(true);
     cockpit.inert = true;
     scene.setInteraction(false);
     return;
@@ -194,6 +211,8 @@ if (import.meta.hot) {
   import.meta.hot.dispose(() => {
     listeners.abort();
     music.dispose();
+    drive.dispose();
+    history.scrollRestoration = originalScrollRestoration;
     scene?.dispose();
   });
 }

@@ -10,11 +10,14 @@ import { createConsoleFlight } from "./console/flight";
 import { mountConsoleScreen, type OpenApp } from "./console/screen";
 import { createDriverLook } from "./driver-look/controller";
 import { mountResetControls } from "./driver-look/reset-controls";
+import { DRIVE_ROUTE } from "./drive/config";
+import type { ScrollDrive } from "./drive/scroll";
 import { createRetroCamera } from "./retro";
 
 interface SceneEvents {
   open: OpenApp;
   failure: () => void;
+  drive: ScrollDrive;
   shade: (opacity: number) => void;
 }
 
@@ -27,7 +30,7 @@ export async function mountScene(container: HTMLElement, events: SceneEvents) {
     CAMERA.far,
   );
   camera.position.set(CAMERA.x, CAMERA.eyeHeight, 0);
-  const options: StreetOptions = { paused: motion.matches };
+  const options: StreetOptions = { routeLength: DRIVE_ROUTE.length };
   const preview = import.meta.env.DEV ? await import("./preview") : undefined;
   const cockpitRequested = !preview?.showStreetOnly();
   if (preview) {
@@ -98,7 +101,9 @@ export async function mountScene(container: HTMLElement, events: SceneEvents) {
   function frame(time: number) {
     const delta = (time - (lastFrame ?? time)) / 1000;
     lastFrame = time;
-    if (!flight.holdsScene) street.update(delta);
+    const previous = street.distance;
+    if (interactive && !flight.holdsScene) events.drive.update(delta);
+    street.setDistance(events.drive.distance, delta);
     flight.update(delta);
     if (!active) return;
     driverLook?.update(delta);
@@ -106,10 +111,7 @@ export async function mountScene(container: HTMLElement, events: SceneEvents) {
     consoleScreen?.update();
     retro.update(
       delta,
-      !flight.holdsScene &&
-        !street.paused &&
-        street.speed > 0 &&
-        !motion.matches,
+      !flight.holdsScene && previous !== street.distance && !motion.matches,
     );
     composer.render();
   }
@@ -121,13 +123,6 @@ export async function mountScene(container: HTMLElement, events: SceneEvents) {
 
   window.addEventListener("resize", resize, listeners);
   document.addEventListener("visibilitychange", syncLoop, listeners);
-  motion.addEventListener(
-    "change",
-    () => {
-      street.paused = motion.matches;
-    },
-    listeners,
-  );
   renderer.domElement.addEventListener(
     "webglcontextlost",
     events.failure,

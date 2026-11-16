@@ -31,10 +31,8 @@ export function applyCameraOverrides(camera: THREE.PerspectiveCamera) {
 
 export function readPreviewOptions(): StreetOptions {
   return {
-    speed: bounded("speed", 6, 0, 64),
     quality: params.get("quality") === "low" ? "low" : "standard",
     seed: bounded("seed", 3401, 0, 4294967295),
-    ...(params.get("paused") === "1" ? { paused: true } : {}),
   };
 }
 

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { createChunk } from "./chunk";
 import {
+  CAMERA,
   DEFAULT_FOG,
   DEFAULT_PALETTE,
   STREET,
@@ -15,9 +16,7 @@ export { CAMERA } from "./config";
 export type { StreetPalette, StreetQuality } from "./config";
 
 export interface StreetOptions {
-  /** Travel speed in metres per second. Use 3–10 for normal preview tuning. */
-  speed?: number;
-  paused?: boolean;
+  routeLength?: number;
   seed?: number;
   quality?: StreetQuality;
   fog?: Partial<typeof DEFAULT_FOG>;
@@ -27,8 +26,7 @@ export interface StreetOptions {
 
 export function createTokyoStreet(options: StreetOptions = {}) {
   const {
-    speed = 6,
-    paused = false,
+    routeLength = 0,
     seed = 3401,
     quality = "standard",
     lightingIntensity = 1,
@@ -37,15 +35,16 @@ export function createTokyoStreet(options: StreetOptions = {}) {
   const fog = { ...DEFAULT_FOG, ...options.fog };
 
   const root = new THREE.Group();
-  root.name = "Looping Tokyo street";
+  root.name = "Tokyo street route";
   const road = createRoadKit(seed, palette.asphalt);
   const materials = createFacadeMaterials(seed);
   const box = new THREE.BoxGeometry();
   const stride = STREET.chunkLength;
-  const loopLength = STREET.chunkCount * stride;
-  const recycleAt = STREET.recycleBehind + stride;
+  // Each chunk has a permanent seed and route coordinate. The extra chunks cover
+  // the finite travel range while retaining the original front and rear margins.
   const firstChunkZ = 2 * stride + 11;
-  const chunks = Array.from({ length: STREET.chunkCount }, (_, index) => {
+  const count = STREET.chunkCount + Math.ceil(routeLength / stride);
+  const chunks = Array.from({ length: count }, (_, index) => {
     const chunk = createChunk(
       index,
       seed,
@@ -55,11 +54,24 @@ export function createTokyoStreet(options: StreetOptions = {}) {
       materials,
       box,
     );
-    chunk.root.position.z = firstChunkZ - index * stride;
     root.add(chunk.root);
     return chunk;
   });
+  let travel = -1;
 
+  function place(distance: number) {
+    const next = THREE.MathUtils.clamp(distance, 0, routeLength);
+    if (travel === next) return;
+    travel = next;
+    for (let index = 0; index < chunks.length; index++) {
+      const chunk = chunks[index].root;
+      const z = firstChunkZ - index * stride + travel;
+      chunk.position.z = z;
+      chunk.visible = z >= -CAMERA.far && z - stride <= STREET.recycleBehind;
+    }
+  }
+
+  place(0);
   const lighting = createStreetLights(
     root,
     chunks,
@@ -67,42 +79,16 @@ export function createTokyoStreet(options: StreetOptions = {}) {
   );
   lighting.update(0, lightingIntensity, true);
   let disposed = false;
-  let travel = 0;
-  let currentIntensity = lightingIntensity;
-
   return {
     root,
     fog,
-    speed,
-    paused,
-    lightingIntensity,
-    update(deltaSeconds: number) {
+    get distance() {
+      return travel;
+    },
+    setDistance(distance: number, delta: number) {
       if (disposed) return;
-      const delta =
-        this.paused ||
-        this.speed <= 0 ||
-        !Number.isFinite(this.speed) ||
-        !Number.isFinite(deltaSeconds)
-          ? 0
-          : THREE.MathUtils.clamp(deltaSeconds, 0, STREET.maxDelta);
-      if (delta === 0) {
-        if (currentIntensity !== this.lightingIntensity) {
-          currentIntensity = this.lightingIntensity;
-          lighting.update(0, currentIntensity);
-        }
-        return;
-      }
-      currentIntensity = this.lightingIntensity;
-      travel = (travel + this.speed * delta) % loopLength;
-      // All sections derive their positions from one phase to keep road joins aligned.
-      // Each section wraps after its front edge crosses the rear view envelope.
-      for (let index = 0; index < chunks.length; index++) {
-        const z = firstChunkZ - index * stride + travel;
-        chunks[index].root.position.z =
-          recycleAt -
-          THREE.MathUtils.euclideanModulo(recycleAt - z, loopLength);
-      }
-      lighting.update(delta, currentIntensity);
+      place(distance);
+      lighting.update(Math.min(delta, STREET.maxDelta), lightingIntensity);
     },
     dispose() {
       if (disposed) return;
