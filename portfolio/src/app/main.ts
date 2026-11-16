@@ -11,12 +11,15 @@ import { mountConsoleScreen, type OpenApp } from "./console/screen";
 import { createDriverLook } from "./driver-look/controller";
 import { mountResetControls } from "./driver-look/reset-controls";
 import { DRIVE_ROUTE } from "./drive/config";
+import { mountStreetPanels } from "./drive/panels";
 import type { ScrollDrive } from "./drive/scroll";
 import { createRetroCamera } from "./retro";
 
 interface SceneEvents {
   open: OpenApp;
   failure: () => void;
+  readExperience: (index: number) => void;
+  travel: () => void;
   drive: ScrollDrive;
   shade: (opacity: number) => void;
 }
@@ -48,6 +51,14 @@ export async function mountScene(container: HTMLElement, events: SceneEvents) {
   scene.background = new THREE.Color(street.fog.color);
   scene.fog = new THREE.Fog(street.fog.color, street.fog.near, street.fog.far);
   scene.add(street.root);
+  const panels = mountStreetPanels(
+    scene,
+    street.root,
+    camera,
+    renderer.domElement,
+    motion,
+    events.readExperience,
+  );
 
   const standard = options.quality !== "low";
   const target = new THREE.WebGLRenderTarget(1, 1, {
@@ -83,6 +94,8 @@ export async function mountScene(container: HTMLElement, events: SceneEvents) {
   let cockpit:
     Awaited<ReturnType<typeof import("../cockpit/model").loadR34>> | undefined;
   const flight = createConsoleFlight(camera, motion, events.shade);
+  const { panel } = DRIVE_ROUTE;
+  const stopFocus = new THREE.Vector3(panel.x, panel.y, -panel.ahead);
 
   function resize() {
     if (!active) return;
@@ -104,6 +117,8 @@ export async function mountScene(container: HTMLElement, events: SceneEvents) {
     const previous = street.distance;
     if (interactive && !flight.holdsScene) events.drive.update(delta);
     street.setDistance(events.drive.distance, delta);
+    panels.update(street.distance, delta);
+    if (interactive && !flight.holdsScene) events.travel();
     flight.update(delta);
     if (!active) return;
     driverLook?.update(delta);
@@ -140,6 +155,7 @@ export async function mountScene(container: HTMLElement, events: SceneEvents) {
         cockpit = model;
         disposeCarLighting = mountCarLighting(model.root);
         scene.add(model.root);
+        panels.setCar(model.root);
         const view = R34.camera;
         camera.position.set(...view.eye);
         camera.rotation.set(view.pitch, view.yaw, 0, "YXZ");
@@ -148,7 +164,12 @@ export async function mountScene(container: HTMLElement, events: SceneEvents) {
         camera.far = view.far;
         preview?.applyCameraOverrides(camera);
         camera.updateProjectionMatrix();
-        driverLook = createDriverLook(camera, renderer.domElement, motion);
+        driverLook = createDriverLook(
+          camera,
+          renderer.domElement,
+          motion,
+          panels.ownsPointer,
+        );
         driverLook.setEnabled(interactive);
         resetControls = mountResetControls(
           container,
@@ -181,9 +202,14 @@ export async function mountScene(container: HTMLElement, events: SceneEvents) {
       resize();
       syncLoop();
     },
+    setExperience: panels.setActive,
+    viewStop() {
+      driverLook?.aim(stopFocus);
+    },
     setInteraction(next: boolean) {
       interactive = next;
       driverLook?.setEnabled(next);
+      panels.setInteraction(next);
     },
     enter(done: () => void) {
       return consoleScreen ? flight.enter(consoleScreen.center, done) : false;
@@ -206,6 +232,7 @@ export async function mountScene(container: HTMLElement, events: SceneEvents) {
       disposeCarLighting?.();
       cockpit?.dispose();
       disposePreview?.();
+      panels.dispose();
       street.dispose();
       drawScene.dispose();
       bloom.dispose();

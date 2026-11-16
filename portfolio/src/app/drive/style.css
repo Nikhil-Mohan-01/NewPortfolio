@@ -1,0 +1,204 @@
+.experience-route,
+.experience-detail {
+  color-scheme: dark;
+  color: #f5f6ff;
+  background: #101522;
+  border: 1px solid #48617f;
+  font-family: var(--os-sans);
+}
+
+.is-exploring-experience .cockpit-entry > p,
+.is-exploring-experience .cockpit-entry > nav {
+  display: none;
+}
+
+.is-exploring-experience .cockpit-entry {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.is-exploring-experience .cockpit-entry .cockpit-primary {
+  margin: 0;
+  border-color: #48617f;
+  border-radius: 8px;
+  background: #101522;
+  color: #e2eaff;
+}
+
+.experience-route {
+  position: absolute;
+  z-index: 2;
+  inset: calc(max(12px, env(safe-area-inset-top)) + 46px) auto auto
+    max(12px, env(safe-area-inset-left));
+  box-sizing: border-box;
+  width: min(304px, calc(100% - 24px));
+  border-radius: 12px;
+  padding: 12px;
+  background: #101522ef;
+  box-shadow: 0 12px 30px #03071260;
+}
+
+.experience-route-header h2 {
+  font-size: 20px;
+  letter-spacing: -0.035em;
+  margin: 0 0 3px;
+}
+
+.experience-route-header a {
+  float: right;
+  color: #c4d7ff;
+  font-size: 12px;
+  padding-block: 4px;
+}
+
+.experience-route-header p {
+  margin: 0 0 12px;
+  color: #c7d2e9;
+  font-size: 13px;
+}
+
+.experience-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.experience-route button,
+.detail-close {
+  min-height: 34px;
+  padding: 4px 8px;
+  border: 1px solid #394a68;
+  border-radius: 6px;
+  background: #25324a;
+  color: #f5f6ff;
+  font: 650 12px var(--os-sans);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.experience-navigation button {
+  padding-inline: 6px;
+}
+
+.experience-route button:hover,
+.detail-close:hover {
+  background: #354c73;
+}
+
+.experience-route button[aria-disabled="true"] {
+  color: #a7b4cf;
+  background: #182135;
+  cursor: default;
+}
+
+.experience-stops {
+  display: grid;
+  gap: 4px;
+  padding: 0;
+  margin: 9px 0 0;
+  list-style: none;
+}
+
+.experience-stops li {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.experience-stops [data-stop] {
+  flex: 1;
+  text-align: left;
+}
+
+.experience-stops [aria-current] {
+  border-color: #abc9ff;
+  color: #fff;
+  background: #354e7a;
+}
+
+.experience-route :focus-visible,
+.experience-detail :focus-visible {
+  outline: 2px solid #c4d7ff;
+  outline-offset: 2px;
+}
+
+.experience-detail {
+  border-radius: 18px;
+  padding: 22px clamp(18px, 5vw, 36px) 29px;
+  box-sizing: border-box;
+  width: min(650px, calc(100% - 28px));
+  max-height: min(74dvh, 580px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  box-shadow: 0 20px 90px #02040bbd;
+}
+
+.experience-detail::backdrop {
+  background: #070b16bd;
+}
+
+.experience-detail form {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
+.detail-close {
+  min-height: 42px;
+  padding-inline: 12px;
+  font-size: 14px;
+}
+
+.experience-detail h2 {
+  margin: 0 0 7px;
+  font-size: clamp(26px, 6vw, 40px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.experience-role {
+  margin: 0;
+  color: #c2d4ff;
+  font-weight: 680;
+}
+
+.experience-meta {
+  margin-top: 4px;
+  color: #becae3;
+  font-size: 14px;
+}
+
+.experience-detail .os-bullets {
+  line-height: 1.55;
+}
+
+@media (max-width: 680px) {
+  .is-exploring-experience .cockpit-entry {
+    top: 64px;
+  }
+
+  .experience-route {
+    inset: auto 12px 86px;
+    width: min(305px, calc(100% - 24px));
+  }
+
+  .is-exploring-experience .drive-progress {
+    bottom: 52px;
+  }
+}
+
+@media (max-height: 420px) {
+  .experience-route {
+    padding: 6px 8px;
+  }
+
+  .experience-route-header p {
+    margin-bottom: 4px;
+  }
+
+  .experience-route button {
+    min-height: 27px;
+  }
+}

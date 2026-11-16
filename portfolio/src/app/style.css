@@ -157,6 +157,7 @@ html.drive-locked {
   overflow-y: hidden;
 }
 html {
+  scrollbar-gutter: stable;
   overflow-anchor: none;
 }
 
@@ -208,9 +209,9 @@ html {
   max-width: min(270px, calc(100% - 24px));
   box-sizing: border-box;
   padding: 13px 14px 9px;
-  border-left: 2px solid #b5e48c;
-  background: #111a1ce8;
-  color: #edf1df;
+  border-left: 2px solid #abc9ff;
+  background: #101522e8;
+  color: #e2eaff;
   font: 500 13px/1.4 var(--os-sans);
 }
 .cockpit-entry p {
@@ -232,7 +233,7 @@ html {
   align-items: center;
   min-height: 35px;
   text-decoration: none;
-  font: 650 11px var(--os-mono);
+  font: 650 12px var(--os-sans);
 }
 .cockpit-entry a:hover {
   text-decoration: underline;
@@ -241,9 +242,10 @@ html {
   gap: 7px;
   margin-top: 6px;
   padding-inline: 8px;
-  border: 1px solid #6c8d60;
-  background: #263728;
-  color: #c7efa8;
+  border: 1px solid #52678b;
+  border-radius: 7px;
+  background: #273752;
+  color: #e2eaff;
 }
 .noscript-fallback {
   padding: 20px;

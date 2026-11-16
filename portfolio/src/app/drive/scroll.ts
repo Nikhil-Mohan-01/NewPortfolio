@@ -15,6 +15,7 @@ export function createScrollDrive(
   let target = 0;
   let rendered = 0;
   let locked = true;
+  let savedOffset = 0;
   let expectedOffset: number | undefined;
   let navigation: { from: number; to: number; elapsed: number } | undefined;
 
@@ -44,11 +45,13 @@ export function createScrollDrive(
     options,
   );
   window.addEventListener("touchstart", cancelNavigation, options);
-  window.addEventListener("pointerdown", cancelNavigation, options);
   window.addEventListener(
     "keydown",
     (event) => {
       if (
+        !event.defaultPrevented &&
+        !event.ctrlKey &&
+        !event.metaKey &&
         [
           "ArrowUp",
           "ArrowDown",
@@ -69,9 +72,12 @@ export function createScrollDrive(
     () => {
       if (locked) return;
       const offset = window.scrollY;
-      if (expectedOffset !== undefined && Math.abs(offset - expectedOffset) > 1)
-        cancelNavigation();
-      expectedOffset = undefined;
+      if (expectedOffset !== undefined) {
+        const matches = Math.abs(offset - expectedOffset) <= 0.5;
+        expectedOffset = undefined;
+        if (matches) return;
+      }
+      cancelNavigation();
       target = clamp(offset / range());
     },
     options,
@@ -88,18 +94,22 @@ export function createScrollDrive(
     get distance() {
       return rendered * DRIVE_ROUTE.length;
     },
+    get intendedDistance() {
+      return (navigation?.to ?? target) * DRIVE_ROUTE.length;
+    },
     lock(next: boolean) {
       if (locked === next && root.classList.contains("drive-locked") === next)
         return;
       locked = next;
-      root.classList.toggle("drive-locked", next);
       if (next) {
         cancelNavigation();
-        // Keep both the visible pose and the native scroll offset at the same point.
+        savedOffset = track.hidden ? 0 : clamp(window.scrollY / range());
         target = rendered;
-        if (!track.hidden) put(rendered);
+        root.classList.add("drive-locked");
       } else {
-        put(target);
+        root.classList.remove("drive-locked");
+        put(savedOffset);
+        target = rendered;
       }
     },
     go(distance: number, animate = true) {

@@ -17,6 +17,7 @@ export function createDriverLook(
   camera: Camera,
   canvas: HTMLCanvasElement,
   reducedMotion: MediaQueryList,
+  ownsPointer?: (event: PointerEvent) => boolean,
 ) {
   const base = camera.quaternion.clone();
   const parentRotation = new Quaternion();
@@ -24,6 +25,8 @@ export function createDriverLook(
   const yawRotation = new Quaternion();
   const pitchRotation = new Quaternion();
   const right = new Vector3(1, 0, 0);
+  const forward = new Vector3(0, 0, -1).applyQuaternion(base);
+  const aimDirection = new Vector3();
   const current: Angles = { yaw: 0, pitch: 0 };
   const target: Angles = { yaw: 0, pitch: 0 };
   const abort = new AbortController();
@@ -33,6 +36,7 @@ export function createDriverLook(
   let suppressClickFor: number | undefined;
   let resetStart: Angles | undefined;
   let resetElapsed = 0;
+  let guiding = false;
 
   function apply() {
     up.set(0, 1, 0);
@@ -54,9 +58,10 @@ export function createDriverLook(
     if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
   }
 
-  function cancelReset() {
-    if (!resetStart) return;
+  function cancelGuidance() {
+    if (!resetStart && !guiding) return;
     resetStart = undefined;
+    guiding = false;
     Object.assign(target, current);
   }
 
@@ -85,6 +90,7 @@ export function createDriverLook(
         !enabled ||
         event.pointerType === "touch" ||
         event.target !== canvas ||
+        ownsPointer?.(event) ||
         gesture ||
         !event.isPrimary ||
         event.button !== 0
@@ -118,7 +124,7 @@ export function createDriverLook(
         dx *= excess;
         dy *= excess;
         gesture.dragging = true;
-        cancelReset();
+        cancelGuidance();
         canvas.classList.add("is-looking");
       }
       gesture.x = event.clientX;
@@ -191,7 +197,7 @@ export function createDriverLook(
       const offset = keys[event.key];
       if (!offset || !event.key.startsWith("Arrow")) return;
       event.preventDefault();
-      cancelReset();
+      cancelGuidance();
       adjust(offset.yaw, offset.pitch);
     },
     options,
@@ -214,12 +220,29 @@ export function createDriverLook(
       enabled = next;
       if (!enabled) {
         endGesture();
-        resetStart = undefined;
+        cancelGuidance();
         Object.assign(target, current);
       }
     },
+    aim(point: Vector3) {
+      if (!enabled) return;
+      endGesture();
+      cancelGuidance();
+      aimDirection.copy(point).sub(camera.position).normalize();
+      const azimuth = (v: Vector3) => Math.atan2(v.x, -v.z);
+      const yaw = MathUtils.radToDeg(azimuth(aimDirection) - azimuth(forward));
+      const pitch = MathUtils.radToDeg(
+        Math.asin(aimDirection.y) - Math.asin(forward.y),
+      );
+      guiding = !reducedMotion.matches;
+      adjust(
+        MathUtils.euclideanModulo(yaw + 180, 360) - 180 - target.yaw,
+        pitch - target.pitch,
+      );
+    },
     reset() {
       if (!enabled) return;
+      guiding = false;
       endGesture();
       target.yaw = target.pitch = 0;
       if (reducedMotion.matches) {
@@ -249,6 +272,8 @@ export function createDriverLook(
           : 1 - Math.exp(-dt / DRIVER_LOOK.smoothingSeconds);
         current.yaw = approach(current.yaw, target.yaw, alpha);
         current.pitch = approach(current.pitch, target.pitch, alpha);
+        if (current.yaw === target.yaw && current.pitch === target.pitch)
+          guiding = false;
         apply();
       }
     },

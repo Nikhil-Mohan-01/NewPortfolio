@@ -6,9 +6,10 @@ import {
   projects,
   skills,
   type Project,
+  type Role,
 } from "./content";
 import { NIGHT_MUSIC } from "../music/config";
-import type { DashboardRoute } from "./routes";
+import { STREET_EXPERIENCE, type DashboardRoute } from "./routes";
 import "./style.css";
 import "./launcher.css";
 
@@ -53,7 +54,7 @@ export function createDashboard(root: HTMLElement) {
         }
         <main class="os-content ${route.id === "home" ? "os-home" : ""}">
           ${notice ? `<p class="os-notice" role="status">${notice}</p>` : ""}
-          ${renderRoute(route, title)}
+          ${renderRoute(route, title, car !== "unavailable")}
         </main>
         <footer class="os-footer">
           <span>Nikhil Mohan</span>
@@ -75,7 +76,7 @@ export function createDashboard(root: HTMLElement) {
   };
 }
 
-function renderRoute(route: DashboardRoute, title: string) {
+function renderRoute(route: DashboardRoute, title: string, canDrive: boolean) {
   if (route.id === "home")
     return `
     <section class="os-hero">
@@ -117,7 +118,13 @@ function renderRoute(route: DashboardRoute, title: string) {
     case "projects":
       return header + (project ? renderProject(project) : renderProjects());
     case "experience":
-      return header + renderExperience();
+      return (
+        header +
+        (canDrive
+          ? `<div class="os-actions"><a class="os-action is-accent" href="${STREET_EXPERIENCE}">Explore the Street <span aria-hidden="true">↗</span></a></div>`
+          : "") +
+        renderExperience()
+      );
     case "about":
       return (
         header +
@@ -201,17 +208,20 @@ function renderProject(project: Project) {
 function renderExperience() {
   return `<div class="os-timeline">${experience
     .map(
-      (role, i) => `
+      (role) => `
     <article class="os-role">
       <div class="os-role-meta"><span>${role.dates}</span><span>${role.location}</span></div>
       <div class="os-panel"><h2>${role.company}</h2><p class="os-role-title">${role.title}</p>
-        ${i === 0 ? '<div class="os-result"><strong>6+ hours → 1.78 seconds</strong><span>Recurring invoice reconciliation process</span></div>' : ""}
-        ${role.summary ? `<p>${role.summary}</p>` : ""}
-        ${role.highlights.length ? `<ul class="os-bullets">${role.highlights.map((item) => `<li>${item}</li>`).join("")}</ul>` : ""}
+        ${renderRoleDetails(role)}
       </div>
     </article>`,
     )
     .join("")}</div>`;
+}
+
+export function renderRoleDetails(role: Role) {
+  return `<p class="os-role-headline">${role.headline}</p>
+    ${role.highlights.length ? `<ul class="os-bullets">${role.highlights.map((item) => `<li>${item}</li>`).join("")}</ul>` : ""}`;
 }
 
 function renderEducation() {

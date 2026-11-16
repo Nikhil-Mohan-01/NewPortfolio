@@ -437,20 +437,9 @@
 .os-role-title {
   color: var(--os-accent) !important;
 }
-.os-result {
-  display: grid;
-  padding: 10px 12px;
-  margin-block: 12px;
-  border-left: 2px solid var(--os-accent);
-  background: #26382c;
-}
-.os-result strong {
-  font: 700 19px var(--os-mono);
-  color: var(--os-accent);
-}
-.os-result span {
-  font-size: 13px;
-  color: var(--os-muted);
+.os-role-headline {
+  font-size: 1.12em;
+  font-weight: 680;
 }
 .os-bullets {
   padding-left: 20px;

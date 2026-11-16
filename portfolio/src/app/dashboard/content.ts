@@ -151,12 +151,12 @@ export const projects: readonly Project[] = [
   },
 ];
 
-interface Role {
+export interface Role {
   company: string;
   title: string;
   dates: string;
   location: string;
-  summary?: string;
+  headline: string;
   highlights: readonly string[];
 }
 
@@ -165,6 +165,7 @@ export const experience: readonly Role[] = [
     company: "LG Energy Solution",
     title: "Software Engineer Intern (Cybersecurity)",
     dates: "May–August 2026",
+    headline: "Automated a 6+ hour process down to 1.78 seconds.",
     location: "Windsor, Ontario",
     highlights: [
       "Built a Python invoice reconciliation pipeline that reduced a recurring 6+ hour process to 1.78 seconds, automating PDF extraction, field validation, and discrepancy detection.",
@@ -176,6 +177,8 @@ export const experience: readonly Role[] = [
     company: "Paraverse Studios",
     title: "Software Engineering Intern",
     dates: "January–April 2026",
+    headline:
+      "Shipped multiplayer features for an application reaching 7,000+ players.",
     location: "Remote / Toronto, Ontario",
     highlights: [
       "Shipped features for a multiplayer application reaching 7,000+ players, collaborating across engineering and design on integration and gameplay improvements.",
@@ -188,7 +191,7 @@ export const experience: readonly Role[] = [
     title: "Code Sensei (Instructor)",
     dates: "July 2023–August 2025",
     location: "Windsor, Ontario",
-    summary: "Coding instruction and mentorship.",
+    headline: "Coding instruction and mentorship.",
     highlights: [],
   },
 ];

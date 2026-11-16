@@ -6,12 +6,12 @@ export const DRIVE_ROUTE = {
   guidanceSeconds: 0.54,
   stops: [26, 80, 138],
   panel: {
-    x: 2.19,
-    y: 1.75,
-    ahead: 5.0,
-    width: 3.35,
-    height: 1.58,
-    yawDegrees: -78,
+    x: 2.05,
+    y: 1.65,
+    ahead: 8.8,
+    width: 2.75,
+    height: 1.45,
+    yawDegrees: -64,
     fadeSeconds: 0.24,
   },
 } as const;
