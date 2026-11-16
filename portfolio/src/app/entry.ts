@@ -31,7 +31,22 @@ let sceneUnavailable = false;
 let opener: HTMLElement | undefined;
 let shownHash: string | undefined;
 let experienceActive = false;
+const experiencePositionKey = "nikhil-portfolio.experience-position";
 let experienceDistance: number | undefined;
+try {
+  const stored = sessionStorage.getItem(experiencePositionKey);
+  if (stored !== null) {
+    const distance = Number(stored);
+    if (
+      Number.isFinite(distance) &&
+      distance >= 0 &&
+      distance <= DRIVE_ROUTE.length
+    )
+      experienceDistance = distance;
+  }
+} catch {
+  // The route can still remember its position within the current page.
+}
 const useReadingByDefault = matchMedia(
   "(max-width: 680px), (pointer: coarse), (prefers-reduced-motion: reduce)",
 );
@@ -87,6 +102,15 @@ function navigateExperience(action: number | "previous" | "next") {
   }
 }
 
+function rememberExperience() {
+  experienceDistance = drive.distance;
+  try {
+    sessionStorage.setItem(experiencePositionKey, String(experienceDistance));
+  } catch {
+    // Storage may be unavailable in this browser.
+  }
+}
+
 function setExperience(enabled: boolean) {
   if (enabled === experienceActive) return;
   experienceActive = enabled;
@@ -97,7 +121,7 @@ function setExperience(enabled: boolean) {
     updateTimeline();
     timeline.focus();
   } else {
-    experienceDistance = drive.distance;
+    rememberExperience();
     timeline.closeForNavigation();
   }
 }
@@ -294,6 +318,13 @@ dashboard.addEventListener(
 );
 
 window.addEventListener("hashchange", () => sync(), options);
+window.addEventListener(
+  "pagehide",
+  () => {
+    if (experienceActive) rememberExperience();
+  },
+  options,
+);
 window.addEventListener(
   "keydown",
   (event) => {

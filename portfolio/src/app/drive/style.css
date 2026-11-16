@@ -59,8 +59,8 @@
 }
 
 .experience-navigation {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 5px;
 }
 
@@ -78,7 +78,9 @@
 }
 
 .experience-navigation button {
-  padding-inline: 6px;
+  padding-inline: 2px;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 .experience-route button:hover,
@@ -186,6 +188,12 @@
 
   .is-exploring-experience .drive-progress {
     bottom: 52px;
+  }
+}
+
+@media (max-width: 345px) {
+  .experience-navigation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
